@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/lib/db"
 	"backend/route"
 	"fmt"
 	"net/http"
@@ -8,7 +9,8 @@ import (
 
 func main() {
 
-	route := route.InitRoute()
+	db := db.InitDB()
+	route := route.InitRoute(db)
 
 	const PORT = ":8000"
 	srv := &http.Server{

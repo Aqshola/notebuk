@@ -1,17 +1,24 @@
 package route
 
 import (
+	"backend/handler"
 	"backend/lib/router"
-	"fmt"
-	"net/http"
+
+	"github.com/jmoiron/sqlx"
 )
 
-func InitRoute() *router.Router {
-	route := router.NewRouter()
+func InitRoute(db *sqlx.DB) *router.Router {
 
-	route.GET("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "HELLO WORLD")
-	})
+	handlerRoute := &handler.AppInjection{
+		DB: db,
+	}
+	route := router.NewRouter()
+	route.GET("/", handlerRoute.HomeHandler)
+
+	//AUTH
+	route.POST("/auth/sign-in", handlerRoute.SignIn)
+	route.POST("/auth/sign-up", handlerRoute.SignUp)
+	route.POST("/auth/validate", handlerRoute.Validate)
 
 	return route
 
