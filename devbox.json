@@ -3,7 +3,8 @@
   "packages": [
     "go@1.23.3",
     "nodejs_23@latest",
-    "air@latest"
+    "air@latest",
+    "postgresql@latest"
   ],
   "env": {
     "DEVBOX_COREPACK_ENABLED": "true"
