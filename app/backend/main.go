@@ -1,13 +1,21 @@
 package main
 
 import (
-	"backend/lib/db"
-	"backend/route"
+	"backend/src/lib/db"
+	"backend/src/route"
 	"fmt"
+	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		log.Fatalf("ERROR LOADING ENV")
+	}
 
 	db := db.InitDB()
 	route := route.InitRoute(db)
@@ -18,6 +26,6 @@ func main() {
 		Handler: route,
 	}
 	//ROUTE
-	fmt.Printf("STARTING PORT %s", PORT)
 	srv.ListenAndServe()
+	fmt.Printf("STARTING PORT %s", PORT)
 }
