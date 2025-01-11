@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -70,11 +71,41 @@ func (r *UserAccessTokenRepository) GetUserAccessTokenByToken(token string) (*Us
 	err := r.DB.QueryRow(
 		`SELECT id, token, user_id, expired_at FROM auth.user_access_token
 		WHERE token = $1`, token,
-	).Scan(&userAccessToken)
+	).Scan(&userAccessToken.Id, &userAccessToken.Token, &userAccessToken.UserId, &userAccessToken.ExpiredAt)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, err
+		}
 		return nil, fmt.Errorf("failed to prepare query: %w", err)
 	}
 
 	return &userAccessToken, nil
+}
+
+func (r *UserAccessTokenRepository) DeleteUserAccessTokenByToken(token string) error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	_, err = tx.Exec(`DELETE FROM auth.user_access_token WHERE token = $1`, token)
+
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+	defer func() {
+		p := recover()
+		if p != nil {
+			_ = tx.Rollback()
+		} else if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+	return nil
 }

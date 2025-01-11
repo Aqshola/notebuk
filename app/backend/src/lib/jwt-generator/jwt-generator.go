@@ -35,3 +35,23 @@ func GenerateJWTWithoutClaim() (string, error) {
 
 	return tokenString, nil
 }
+
+func ParsedJWTWithClaim(token string) (jwt.MapClaims, error) {
+	claims := jwt.MapClaims{}
+	key := []byte(os.Getenv("JWT_KEY"))
+
+	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		// Replace "your-secret-key" with your actual secret key
+		return []byte(key), nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse token: %w", err)
+	}
+
+	if !parsedToken.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return claims, nil
+}

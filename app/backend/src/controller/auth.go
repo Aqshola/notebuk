@@ -4,6 +4,7 @@ import (
 	"backend/src/lib/common"
 	"backend/src/lib/mail"
 	"backend/src/repository/auth"
+	"database/sql"
 	"path/filepath"
 	"time"
 
@@ -307,5 +308,31 @@ func (inj *AppInjection) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (inj *AppInjection) SignOut(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	tokenString, _ := ctx.Value("token").(string)
 
+	userAccessTokenRepository := auth.NewUserAccessTokenRepository(inj.DB)
+	userRefreshTokenRepository := auth.NewUserRefreshTokenRepository(inj.DB)
+
+	dataAccessToken, err := userAccessTokenRepository.GetUserAccessTokenByToken(tokenString)
+	if err != nil && err != sql.ErrNoRows {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED SIGN OUT")
+		return
+	}
+
+	dataRefreshToken, err := userRefreshTokenRepository.GetUserRefreshTokenByUserAccessTokenId(dataAccessToken.Id)
+	if err != nil && err != sql.ErrNoRows {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED SIGN OUT")
+		return
+	}
+
+	if dataAccessToken != nil {
+		userRefreshTokenRepository.DeleteUserRefreshTokenByToken(dataRefreshToken.Token)
+	}
+
+	if dataRefreshToken != nil {
+		userAccessTokenRepository.DeleteUserAccessTokenByToken(dataAccessToken.Token)
+	}
+
+	common.SendJSONResponse(w, http.StatusOK, nil, "LOGOUT SUCCESS")
 }
