@@ -4,6 +4,7 @@ import (
 	"backend/src/lib/common"
 	jwtgenerator "backend/src/lib/jwt-generator"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -59,6 +60,7 @@ func PrivateRoute(next http.HandlerFunc) http.HandlerFunc {
 		claimToken, err := jwtgenerator.ParsedJWTWithClaim(token)
 
 		if err != nil {
+			fmt.Println(err)
 			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "FAILED PARSED TOKEN")
 			return
 		}

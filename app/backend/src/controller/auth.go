@@ -141,7 +141,7 @@ func (inj *AppInjection) Validate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userToken, err := common.GenerateUserToken(userData.Id, userData.Name)
+	userToken, err := common.GenerateUserToken(userData.Id)
 	if err != nil {
 		fmt.Println(err)
 		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
@@ -277,7 +277,7 @@ func (inj *AppInjection) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userToken, err := common.GenerateUserToken(userData.Id, userData.Name)
+	userToken, err := common.GenerateUserToken(userData.Id)
 	if err != nil {
 		fmt.Println(err)
 		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
@@ -320,6 +320,11 @@ func (inj *AppInjection) SignOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if dataAccessToken == nil {
+		common.SendJSONResponse(w, http.StatusOK, nil, "LOGOUT SUCCESS")
+		return
+	}
+
 	dataRefreshToken, err := userRefreshTokenRepository.GetUserRefreshTokenByUserAccessTokenId(dataAccessToken.Id)
 	if err != nil && err != sql.ErrNoRows {
 		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED SIGN OUT")
@@ -335,4 +340,89 @@ func (inj *AppInjection) SignOut(w http.ResponseWriter, r *http.Request) {
 	}
 
 	common.SendJSONResponse(w, http.StatusOK, nil, "LOGOUT SUCCESS")
+}
+
+type RequestRequestToken struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+type ResponseRequestToken struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+}
+
+func (inj *AppInjection) RequestToken(w http.ResponseWriter, r *http.Request) {
+	var requestData RequestRequestToken
+
+	err := json.NewDecoder(r.Body).Decode(&requestData)
+	if err != nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED DECODE WRONG PAYLOAD")
+		return
+	}
+
+	userAccessTokenRepository := auth.NewUserAccessTokenRepository(inj.DB)
+	userRefreshTokenRepository := auth.NewUserRefreshTokenRepository(inj.DB)
+
+	accessTokenData, err := userAccessTokenRepository.GetUserAccessTokenByToken(requestData.AccessToken)
+
+	if err != nil && err != sql.ErrNoRows {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED REQUEST TOKEN")
+		return
+	}
+
+	if accessTokenData == nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "INVALID ACCESS TOKEN")
+		return
+	}
+
+	refreshTokenData, err := userRefreshTokenRepository.GetUserRefreshTokenByToken(requestData.RefreshToken)
+
+	if err != nil && err != sql.ErrNoRows {
+
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED REQUEST TOKEN")
+		return
+	}
+
+	if refreshTokenData == nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "INVALID REFRESH TOKEN")
+		return
+	}
+
+	if refreshTokenData.ExpiredAt.Before(time.Now()) {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "REFRESH TOKEN EXPIRED")
+		return
+	}
+
+	err = userRefreshTokenRepository.DeleteUserRefreshTokenByToken(requestData.RefreshToken)
+	if err != nil && err != sql.ErrNoRows {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED REQUEST TOKEN")
+		return
+	}
+
+	err = userAccessTokenRepository.DeleteUserAccessTokenByToken(requestData.AccessToken)
+	if err != nil && err != sql.ErrNoRows {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED REQUEST TOKEN")
+		return
+	}
+
+	userToken, err := common.GenerateUserToken(accessTokenData.UserId)
+	if err != nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
+		return
+	}
+
+	newUserAccessToken, err := userAccessTokenRepository.InsertUserAccessToken(accessTokenData.UserId, userToken.AccessToken, userToken.ExpiredAccessToken)
+	if err != nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
+		return
+	}
+	userRefreshTokenRepository.InsertUserRefreshToken(refreshTokenData.UserId, userToken.RefreshToken, userToken.ExpiredRefreshToken, newUserAccessToken.Id)
+
+	responseData := &ResponseRequestToken{
+		AccessToken:  userToken.AccessToken,
+		RefreshToken: userToken.RefreshToken,
+	}
+
+	common.SendJSONResponse(w, http.StatusOK, responseData, "SUCCESS REQUEST TOKEN")
 }

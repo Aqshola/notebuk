@@ -25,6 +25,7 @@ func InitRoute(db *sqlx.DB) *router.Router {
 	route.POST("/auth/sign-up", controllerRoute.SignUp)
 	route.POST("/auth/validate", controllerRoute.Validate)
 	route.POST("/auth/sign-out", controllerRoute.SignOut, middleware.PrivateRoute)
+	route.POST("/auth/request-token", controllerRoute.RequestToken)
 
 	return route
 

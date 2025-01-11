@@ -88,3 +88,21 @@ func (r *UsersRepository) GetUserByEmail(email string) (*User, error) {
 
 	return &user, nil
 }
+
+func (r *UsersRepository) GetUserById(id int) (*User, error) {
+	var user User
+
+	err := r.DB.QueryRow(
+		"SELECT id, email, name, password FROM auth.users WHERE id = $1 LIMIT 1",
+		id,
+	).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	return &user, nil
+}

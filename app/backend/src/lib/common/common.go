@@ -87,12 +87,12 @@ type GenerateUserTokenValue struct {
 	ExpiredRefreshToken time.Time
 }
 
-func GenerateUserToken(userId int, userName string) (*GenerateUserTokenValue, error) {
+func GenerateUserToken(userId int) (*GenerateUserTokenValue, error) {
 	expiredAccess := time.Now().Add(1 * time.Hour)
 	jwtClaimContent := map[string]interface{}{
 		"userId":    userId,
-		"userName":  userName,
 		"expiredAt": expiredAccess,
+		"issuedAt":  time.Now(),
 	}
 
 	accessToken, err := jwtgenerator.GenerateJWTWithClaim(jwtClaimContent)
@@ -100,7 +100,12 @@ func GenerateUserToken(userId int, userName string) (*GenerateUserTokenValue, er
 		return nil, fmt.Errorf("FAILED GENERATE ACCESS TOKEN", err)
 	}
 
-	refreshToken, err := jwtgenerator.GenerateJWTWithoutClaim()
+	expiredRefresh := time.Now().Add(7 * 24 * time.Hour)
+	refreshClaimContent := map[string]interface{}{
+		"issuedAt":  time.Now(),
+		"expiredAt": expiredRefresh,
+	}
+	refreshToken, err := jwtgenerator.GenerateJWTWithClaim(refreshClaimContent)
 	if err != nil {
 		return nil, fmt.Errorf("FAILED GENERATE REFRESH TOKEN", err)
 	}

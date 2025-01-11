@@ -73,7 +73,7 @@ func (r *UserRefreshTokenRepository) GetUserRefreshTokenByToken(token string) (*
 	err := r.DB.QueryRow(
 		`SELECT id, token, user_id, expired_at, user_access_token_id FROM auth.user_refresh_token
 		WHERE token = $1`, token,
-	).Scan(&userRefreshToken)
+	).Scan(&userRefreshToken.Id, &userRefreshToken.Token, &userRefreshToken.UserId, &userRefreshToken.ExpiredAt, &userRefreshToken.UserAccessTokenId)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
