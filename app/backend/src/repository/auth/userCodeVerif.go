@@ -74,11 +74,39 @@ func (r *UserCodeVerifRepository) GetCodeVerificationByUserId(userId int) (*User
 	err := r.DB.QueryRow(
 		`SELECT id, user_id, code, expired_at 
 		FROM auth.user_code_verif WHERE user_id = $1 LIMIT 1`, userId,
-	).Scan(&userCodeVerif)
+	).Scan(&userCodeVerif.Id, &userCodeVerif.UserId, &userCodeVerif.Code, &userCodeVerif.ExpiredAt)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare query: %w", err)
 	}
 
 	return &userCodeVerif, nil
+}
+
+func (r *UserCodeVerifRepository) DeleteCodeVerificationById(id int) error {
+	tx, err := r.DB.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	_, err = tx.Exec(`DELETE FROM auth.user_code_verif WHERE id = $1`, id)
+
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to prepare query: %w", err)
+	}
+	defer func() {
+		p := recover()
+		if p != nil {
+			_ = tx.Rollback()
+		} else if err != nil {
+			_ = tx.Rollback()
+		}
+	}()
+	return nil
+
 }

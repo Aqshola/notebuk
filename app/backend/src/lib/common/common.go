@@ -1,6 +1,7 @@
 package common
 
 import (
+	jwtgenerator "backend/src/lib/jwt-generator"
 	"bytes"
 	"crypto/rand"
 	"encoding/json"
@@ -8,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,9 +18,8 @@ func HashPassword(password string) (string, error) {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		if err != nil {
-			return "", fmt.Errorf("failed to to hash: %w", err)
-		}
+		return "", fmt.Errorf("failed to to hash: %w", err)
+
 	}
 
 	return string(hashPassword), nil
@@ -71,4 +72,42 @@ func TemplateHTMLWithData(data any, pathTemplate string) string {
 	}
 
 	return buf.String()
+}
+
+type GenerateUserTokenValue struct {
+	AccessToken        string
+	ExpiredAccessToken time.Time
+
+	RefreshToken        string
+	ExpiredRefreshToken time.Time
+}
+
+func GenerateUserToken(userId int, userName string) (*GenerateUserTokenValue, error) {
+	expiredAccess := time.Now().Add(1 * time.Hour)
+	jwtClaimContent := map[string]interface{}{
+		"userId":    userId,
+		"userName":  userName,
+		"expiredAt": expiredAccess,
+	}
+
+	accessToken, err := jwtgenerator.GenerateJWTWithClaim(jwtClaimContent)
+	if err != nil {
+		return nil, fmt.Errorf("FAILED GENERATE ACCESS TOKEN", err)
+	}
+
+	refreshToken, err := jwtgenerator.GenerateJWTWithoutClaim()
+	if err != nil {
+		return nil, fmt.Errorf("FAILED GENERATE REFRESH TOKEN", err)
+	}
+
+	userToken := &GenerateUserTokenValue{
+		AccessToken:        accessToken,
+		ExpiredAccessToken: expiredAccess,
+
+		RefreshToken:        refreshToken,
+		ExpiredRefreshToken: time.Now().Add(7 * 24 * time.Hour),
+	}
+
+	return userToken, nil
+
 }

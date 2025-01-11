@@ -74,9 +74,9 @@ func (r *UsersRepository) GetUserByEmail(email string) (*User, error) {
 	var user User
 
 	err := r.DB.QueryRow(
-		"SELECT id, email, password, name FROM auth.users WHERE email = $1 LIMIT 1",
+		"SELECT id, email, name FROM auth.users WHERE email = $1 LIMIT 1",
 		email,
-	).Scan(&user)
+	).Scan(&user.Id, &user.Email, &user.Name)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
