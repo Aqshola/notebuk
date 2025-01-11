@@ -17,6 +17,7 @@ type User struct {
 	Id        int       `json:"id"`
 	Email     string    `json:"email"`
 	Name      string    `json:"name"`
+	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
 	CreatedBy string    `json:"created_by"`
 }
@@ -74,9 +75,9 @@ func (r *UsersRepository) GetUserByEmail(email string) (*User, error) {
 	var user User
 
 	err := r.DB.QueryRow(
-		"SELECT id, email, name FROM auth.users WHERE email = $1 LIMIT 1",
+		"SELECT id, email, name, password FROM auth.users WHERE email = $1 LIMIT 1",
 		email,
-	).Scan(&user.Id, &user.Email, &user.Name)
+	).Scan(&user.Id, &user.Email, &user.Name, &user.Password)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

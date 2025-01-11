@@ -241,6 +241,71 @@ func (inj *AppInjection) RequestCode(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type RequestSignIn struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (inj *AppInjection) SignIn(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "SIGN IN")
+	var requestData RequestSignIn
+
+	err := json.NewDecoder(r.Body).Decode(&requestData)
+	if err != nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED DECODE WRONG PAYLOAD")
+		return
+	}
+
+	usersRepository := auth.NewUsersRepository(inj.DB)
+	accessTokenRepository := auth.NewUserAccessTokenRepository(inj.DB)
+	refreshTokenRepository := auth.NewUserRefreshTokenRepository(inj.DB)
+
+	userData, err := usersRepository.GetUserByEmail(requestData.Email)
+	if err != nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED LOGIN")
+		return
+	}
+
+	if userData == nil {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "WRONG EMAIL OR PASSWORD")
+		return
+	}
+
+	passwordValid := common.ComparePassword(userData.Password, requestData.Password)
+	if !passwordValid {
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "WRONG EMAIL OR PASSWORD")
+		return
+	}
+
+	userToken, err := common.GenerateUserToken(userData.Id, userData.Name)
+	if err != nil {
+		fmt.Println(err)
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
+		return
+	}
+
+	//STORE DATA
+	accessTokenData, err := accessTokenRepository.InsertUserAccessToken(userData.Id, userToken.AccessToken, userToken.ExpiredAccessToken)
+	if err != nil {
+		fmt.Println(err)
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
+		return
+	}
+
+	_, err = refreshTokenRepository.InsertUserRefreshToken(userData.Id, userToken.RefreshToken, userToken.ExpiredRefreshToken, accessTokenData.Id)
+	if err != nil {
+		fmt.Println(err)
+		common.SendJSONResponse(w, http.StatusBadRequest, nil, "FAILED GENERATE TOKEN")
+		return
+	}
+
+	responseData := ResponseValidateData{
+		AccessToken:  userToken.AccessToken,
+		RefreshToken: userToken.RefreshToken,
+	}
+
+	common.SendJSONResponse(w, http.StatusOK, responseData, "SUCCESS VALIDATION")
+}
+
+func (inj *AppInjection) SignOut(w http.ResponseWriter, r *http.Request) {
+
 }

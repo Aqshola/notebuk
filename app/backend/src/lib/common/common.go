@@ -26,6 +26,11 @@ func HashPassword(password string) (string, error) {
 
 }
 
+func ComparePassword(hashPassword string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password))
+	return err == nil
+}
+
 func SendJSONResponse(w http.ResponseWriter, statusCode int, data any, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
