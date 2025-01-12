@@ -31,13 +31,14 @@ func ComparePassword(hashPassword string, password string) bool {
 	return err == nil
 }
 
-func SendJSONResponse(w http.ResponseWriter, statusCode int, data any, message string) {
+func SendJSONResponse(w http.ResponseWriter, statusCode int, responseCode string, data any, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
 	response := JSONResponse{
-		Data:    data,
-		Message: message,
+		Data:         data,
+		Message:      message,
+		ResponseCode: responseCode,
 	}
 
 	json.NewEncoder(w).Encode(response)

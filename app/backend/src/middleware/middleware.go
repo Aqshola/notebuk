@@ -1,10 +1,10 @@
 package middleware
 
 import (
+	"backend/src/constants"
 	"backend/src/lib/common"
 	jwtgenerator "backend/src/lib/jwt-generator"
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -45,13 +45,13 @@ func PrivateRoute(next http.HandlerFunc) http.HandlerFunc {
 		authHeader := r.Header.Get("Authorization")
 
 		if authHeader == "" {
-			common.SendJSONResponse(w, http.StatusUnauthorized, nil, "NO TOKEN PROVIDED")
+			common.SendJSONResponse(w, http.StatusUnauthorized, constants.ERROR_HEADER_AUTH_NO_PROVIDED, nil, constants.RESPONSE_HEADER_AUTH_NO_PROVIDED)
 			return
 		}
 
 		bearerToken := strings.Split(authHeader, " ")
 		if len(bearerToken) != 2 {
-			common.SendJSONResponse(w, http.StatusUnauthorized, nil, "INVALID TOKEN")
+			common.SendJSONResponse(w, http.StatusUnauthorized, constants.ERROR_HEADER_AUTH_NO_PROVIDED, nil, constants.RESPONSE_AUTH_INVALID_ACCESS_TOKEN_ERROR)
 			return
 		}
 
@@ -60,15 +60,14 @@ func PrivateRoute(next http.HandlerFunc) http.HandlerFunc {
 		claimToken, err := jwtgenerator.ParsedJWTWithClaim(token)
 
 		if err != nil {
-			fmt.Println(err)
-			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "FAILED PARSED TOKEN")
+			common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_THRD_JWT_PARSED_TOKEN, nil, constants.RESPONSE_THIRD_PARTY_JWT_PARSED_TOKEN_ERROR)
 			return
 		}
 
 		expiredToken, ok := claimToken["expiredAt"]
 
 		if !ok {
-			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "FAILED PARSED TOKEN")
+			common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_THRD_JWT_PARSED_TOKEN, nil, constants.RESPONSE_THIRD_PARTY_JWT_PARSED_TOKEN_ERROR)
 			return
 		}
 
@@ -76,18 +75,18 @@ func PrivateRoute(next http.HandlerFunc) http.HandlerFunc {
 		expiredString, ok := expiredToken.(string)
 
 		if !ok {
-			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "FAILED PARSED TOKEN")
+			common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_INTERNAL, nil, constants.RESPONSE_THIRD_PARTY_JWT_PARSED_TOKEN_ERROR)
 			return
 		}
 
 		expiryTime, err := time.Parse(time.RFC3339Nano, expiredString)
 		if err != nil {
-			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "FAILED PARSED TOKEN")
+			common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_INTERNAL, nil, constants.RESPONSE_THIRD_PARTY_JWT_PARSED_TOKEN_ERROR)
 			return
 		}
 
 		if time.Now().After(expiryTime) {
-			common.SendJSONResponse(w, http.StatusInternalServerError, nil, "TOKEN EXPIRED")
+			common.SendJSONResponse(w, http.StatusUnauthorized, constants.ERROR_TOKEN_EXPIRED, nil, constants.RESPONSE_TOKEN_EXPIRED)
 			return
 		}
 
