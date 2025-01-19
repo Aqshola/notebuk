@@ -2,9 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
   "packages": [
     "go@1.23.3",
-    "nodejs_23@latest",
     "air@latest",
-    "postgresql@latest"
+    "postgresql@latest",
+    "nodejs@18"
   ],
   "env": {
     "DEVBOX_COREPACK_ENABLED": "true"
