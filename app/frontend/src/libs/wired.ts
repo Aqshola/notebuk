@@ -8,10 +8,28 @@ import {
   generateEllipseParams
 } from 'roughjs/bin/renderer';
 import { ResolvedOptions, OpSet, Op } from 'roughjs/bin/core';
+import { Point } from 'roughjs/bin/geometry';
+import { ZigZagFiller } from 'roughjs/bin/fillers/zigzag-filler';
+import { RenderHelper } from 'roughjs/bin/fillers/filler-interface';
 export const DEFAULT_POINT=[0,0]
 export const SEED=Math.floor(Math.random()*2**31)
 
 type Params = { [name: string]: string };
+
+const fillHelper: RenderHelper = {
+  randOffset(x: number, _o: ResolvedOptions): number {
+    return x;
+  },
+  randOffsetWithRange(min: number, max: number, _o: ResolvedOptions): number {
+    return (min + max) / 2;
+  },
+  ellipse(x: number, y: number, width: number, height: number, o: ResolvedOptions): OpSet {
+    return roughEllipse(x, y, width, height, o);
+  },
+  doubleLineOps(x1: number, y1: number, x2: number, y2: number, o: ResolvedOptions): Op[] {
+    return doubleLineFillOps(x1, y1, x2, y2, o);
+  }
+};
 
 function options(seed: number): ResolvedOptions {
   return {
@@ -30,11 +48,11 @@ function options(seed: number): ResolvedOptions {
     dashOffset: -1,
     dashGap: -1,
     zigzagOffset: 0,
-    // combineNestedSvgPaths: false,
+    combineNestedSvgPaths: false,
     disableMultiStroke: false,
     disableMultiStrokeFill: false,
-    preserveVertices:false,
-    fillShapeRoughnessGain:0,
+    
+    
     seed
   };
 }
@@ -86,4 +104,10 @@ export function rectangle(parent: SVGElement, x: number, y: number, width: numbe
 
 export function line(parent: SVGElement, x1: number, y1: number, x2: number, y2: number, seed: number): SVGElement {
   return createPathNode(roughLine(x1, y1, x2, y2, options(seed)), parent);
+}
+
+export function hachureFill(points: Point[], seed: number): SVGElement {
+  const hf = new ZigZagFiller(fillHelper);
+  const ops = hf.fillPolygon(points, options(seed));
+  return createPathNode(ops, null);
 }

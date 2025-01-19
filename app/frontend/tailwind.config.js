@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily:{
+        'caveat':['Caveat'],
+        'comic-neue':['Comic Neue'],
+        'poppins':['Poppins'],
+
+      },
       colors:{
         primary:{
           purple:'#4D46DD',

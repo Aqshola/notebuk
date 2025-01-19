@@ -20,7 +20,7 @@ svg {
 }
 
 path {
-    stroke: currentColor;
+    stroke: var(--wired-card-background-fill, currentColor);
     stroke-width: 0.7;
     fill: transparent;
 }
@@ -28,3 +28,9 @@ path {
 .hidden {
     display: none;
 }
+
+path.cardFill {
+    stroke-width: 3.5;
+    stroke: var(--wired-card-background-fill);
+}
+

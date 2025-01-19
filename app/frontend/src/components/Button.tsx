@@ -2,17 +2,20 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import { cn } from "../libs/common";
 import "../styles/custom-wired.css";
-import { line, rectangle, SEED } from "../libs/wired";
+import { hachureFill, line, rectangle, SEED } from "../libs/wired";
+import COLOR_THEME from "../constants/color";
 
 const buttonVariants = cva(
   `
+    active:scale-95
     relative 
     wired-rendered
     inline-flex items-center justify-center 
     gap-2 whitespace-nowrap 
     rounded-md text-sm 
     font-medium ring-offset-background 
-    transition-colors 
+    transition-colors
+    transition-transform 
     focus-visible:outline-none 
     focus-visible:ring-2 
     focus-visible:ring-ring 
@@ -25,15 +28,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "text-white  hover:bg-primary-purple/90",
+        destructive: "text-white hover:bg-primary-red/90",
+        "outline-primary":
+          "bg-primary-white text-primary-purple hover:bg-primary-purple/10",
+        "outline-black":
+          "bg-primary-white text-black hover:bg-primary-purple/10",
+        secondary: "text-white  hover:bg-secondary/80",
+        ghost: "",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -52,21 +54,54 @@ interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  elevation?: number;
+  styleMode?: "solid" | "sketch";
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = "default",
+      size,
+      asChild = false,
+      elevation = 1,
+      styleMode = "solid",
+      ...props
+    },
+    ref
+  ) => {
+    const BUTTON_FILL_SOLID_COLOR = {
+      default: "bg-primary-purple",
+      destructive: "bg-primary-red",
+      "outline-primary": "border border-primary-purple",
+      "outline-black": "border border-black",
+      secondary: "bg-primary-green",
+      ghost: "bg-primary-white",
+    };
+
+    const BUTTON_FILL_SKETCH_COLOR = {
+      default: COLOR_THEME.primary.PURPLE,
+      destructive: COLOR_THEME.primary.RED,
+      "outline-primary": COLOR_THEME.primary.PURPLE,
+      "outline-black": COLOR_THEME.primary.BLACK,
+      secondary: COLOR_THEME.primary.GREEN,
+      ghost: COLOR_THEME.primary.WHITE,
+    };
     const localRef = useRef<HTMLButtonElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
-    const elevation = 1;
     const [lastSize, setLastSize] = useState({
       w: 0,
       h: 0,
     });
+
     useEffect(() => {
       if (!localRef.current && !svgRef.current) {
         return;
       }
+
+      //FIRST DRAWN
+      renderDrawHandDrawn();
 
       const resizeObserver = new ResizeObserver(() => {
         renderDrawHandDrawn();
@@ -79,6 +114,88 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       };
     }, []);
 
+    function renderDrawHandDrawn() {
+      if (!variant) return;
+      if (styleMode == "solid") return;
+      if (!localRef.current || !svgRef.current) return;
+      // iS USING VARIANT OUTLINE
+      const isOutline = variant?.includes("outline");
+      svgRef.current.innerHTML = "";
+
+      //CALCULATE WIDTH AND HEADING
+      const size = localRef.current.getBoundingClientRect();
+      const elev = Math.min(Math.max(1, elevation), 5);
+      const w = size.width + (elev - 1) * 2;
+      const h = size.height + (elev - 1) * 2;
+
+      if (w == lastSize.w && h == lastSize.h) return;
+      svgRef.current.style.width = `${w}`;
+      svgRef.current.style.height = `${h}`;
+      setLastSize({ w, h });
+
+      const s = {
+        width: w - (elev - 1) * 2,
+        height: h - (elev - 1) * 2,
+      };
+
+      if (!isOutline) {
+        const fillNode = hachureFill(
+          [
+            [2, 2],
+            [s.width - 4, 2],
+            [s.width - 2, s.height - 4],
+            [2, s.height - 4],
+          ],
+          SEED
+        );
+        fillNode.classList.add("cardFill");
+        svgRef.current.style.setProperty(
+          "--wired-card-background-fill",
+          BUTTON_FILL_SKETCH_COLOR[variant]
+        );
+        svgRef.current.appendChild(fillNode);
+      }
+
+      if (isOutline && variant) {
+        svgRef.current.style.color = BUTTON_FILL_SKETCH_COLOR[variant];
+        rectangle(svgRef.current, 0, 0, s.width, s.height, SEED);
+        for (let i = 1; i < elev; i++) {
+          line(
+            svgRef.current,
+            i * 2,
+            s.height + i * 2,
+            s.width + i * 2,
+            s.height + i * 2,
+            SEED
+          ).style.opacity = `${(75 - i * 10) / 100}`;
+          line(
+            svgRef.current,
+            s.width + i * 2,
+            s.height + i * 2,
+            s.width + i * 2,
+            i * 2,
+            SEED
+          ).style.opacity = `${(75 - i * 10) / 100}`;
+          line(
+            svgRef.current,
+            i * 2,
+            s.height + i * 2,
+            s.width + i * 2,
+            s.height + i * 2,
+            SEED
+          ).style.opacity = `${(75 - i * 10) / 100}`;
+          line(
+            svgRef.current,
+            s.width + i * 2,
+            s.height + i * 2,
+            s.width + i * 2,
+            i * 2,
+            SEED
+          ).style.opacity = `${(75 - i * 10) / 100}`;
+        }
+      }
+    }
+
     if (asChild) {
       return (
         <slot className={cn(buttonVariants({ variant, size, className }))}>
@@ -90,63 +207,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
 
-    function renderDrawHandDrawn() {
-      if (!localRef.current || !svgRef.current) return;
-
-      const size = localRef.current.getBoundingClientRect();
-      const elev = Math.min(Math.max(1, elevation), 5);
-      const w = size.width + (elev - 1) * 2;
-      const h = size.height + (elev - 1) * 2;
-
-      if (w == lastSize.w && h == lastSize.h) return;
-
-      svgRef.current.style.width = `${w}`;
-      svgRef.current.style.height = `${h}`;
-
-      setLastSize({ w, h });
-
-      const s = {
-        width: w - (elev - 1) * 2,
-        height: h - (elev - 1) * 2,
-      };
-
-      rectangle(svgRef.current, 0, 0, s.width, s.height, SEED);
-      for (let i = 1; i < elev; i++) {
-        line(
-          svgRef.current,
-          i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          s.height + i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          s.width + i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          s.height + i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          s.width + i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-      }
-    }
-
     return (
       <button
         ref={(parameterRef) => {
@@ -155,13 +215,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           (localRef as React.MutableRefObject<HTMLButtonElement>).current =
             parameterRef;
         }}
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          styleMode === "solid" && variant && BUTTON_FILL_SOLID_COLOR[variant],
+          styleMode == "solid" && "font-poppins",
+          styleMode == "sketch" && "font-comic-neue"
+        )}
         {...props}
       >
-        <div className=" absolute top-0 h-0 left-0 right-0 cursor-none">
+        <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg className="block" ref={svgRef}></svg>
         </div>
-        {props.children}
+        <span className="relative z-30">{props.children}</span>
       </button>
     );
   }
