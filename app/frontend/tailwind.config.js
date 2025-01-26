@@ -20,6 +20,18 @@ export default {
           green:"#349b7c",
           yellow:"#d7dd46",
         }
+      },
+      transitionTimingFunction: {
+        'bounce': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+      },
+      keyframes: {
+        'bounce-small': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' }
+        }
+      },
+      animation: {
+        'bounce-small': 'bounce-small 0.5s ease-in-out',
       }
     },
   },

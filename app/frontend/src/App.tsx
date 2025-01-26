@@ -1,14 +1,18 @@
-import Button from "./components/Button";
+import { scan } from "react-scan"; // import this BEFORE react
+import React from "react";
+
+import Landing from "./pages/Landing";
+if (typeof window !== "undefined") {
+  scan({
+    enabled: true,
+    log: true, // logs render info to console (default: false)
+  });
+}
 
 function App() {
   return (
     <>
-      <div className="p-14">
-        <p className="text-lg text-purple-600">Notebuk</p>
-
-        <Button size={"lg"}>Testing</Button>
-        <Button size={"sm"}>Testing</Button>
-      </div>
+      <Landing />
     </>
   );
 }
