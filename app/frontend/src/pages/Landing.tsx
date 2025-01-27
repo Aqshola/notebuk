@@ -13,7 +13,7 @@ export default function Landing() {
 
   return (
     <div className="max-w-screen-2xl mx-auto min-h-screen border">
-      <nav className="grid grid-cols-6 md:grid-cols-12 mx-9 my-4 gap-x-11 items-center">
+      <nav className="grid grid-cols-6 md:grid-cols-12 mx-9 my-4 gap-x-11 items-center ">
         <div className="col-span-2 items-center">
           <h1 className="font-comic-neue font-bold text-primary-purple text-lg">
             Notebuk
@@ -34,7 +34,7 @@ export default function Landing() {
         </div>
         {/* FOR MOBILE */}
         <div className="col-span-6 md:hidden flex-col flex justify-start mt-4 ">
-          <MediumDrawer className="w-full p-4" display={showDrawerMobileNav}>
+          <MediumDrawer className="w-full" display={showDrawerMobileNav}>
             <div className="w-full flex flex-col">
               <Button variant={"ghost"} styleMode="sketch">
                 About
@@ -55,7 +55,7 @@ export default function Landing() {
         </div>
 
         {/* FOR MEDIUM */}
-        <div className="md:col-span-2 md:col-start-11 invisible md:visible md:flex justify-between items-center">
+        <div className="md:col-span-2 md:col-start-11 h-0 md:h-auto invisible md:visible md:flex justify-between items-center">
           <Button variant={"ghost"} styleMode="sketch">
             About
           </Button>
@@ -72,7 +72,9 @@ export default function Landing() {
           </Button>
         </div>
       </nav>
-      <main></main>
+      <main>
+        <h1>Notebuk</h1>
+      </main>
     </div>
   );
 }

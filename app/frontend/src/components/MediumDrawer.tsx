@@ -10,14 +10,9 @@ interface MediumDrawerProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
   ({ className, elevation = 1, display = false, ...props }) => {
+    const animateRef = useRef<Animation | null>(null);
     const localRef = useRef<HTMLDivElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
-    const [show, setShow] = useState(display);
-
-    const [lastSize, setLastSize] = useState({
-      w: 0,
-      h: 0,
-    });
 
     useEffect(() => {
       if (!localRef.current && !svgRef.current) {
@@ -35,30 +30,34 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
     }, []);
 
     useEffect(() => {
-      setShow(display);
-
       if (display) {
         animateShow();
       } else {
         animateHide();
       }
+
+      return () => {
+        if (animateRef.current) {
+          animateRef.current.cancel();
+        }
+      };
     }, [display]);
 
     function renderDrawHandDrawn() {
       if (!localRef.current || !svgRef.current) return;
+
       svgRef.current.innerHTML = "";
       // iS USING VARIANT OUTLINE
 
       //CALCULATE WIDTH AND HEADING
+
       const size = localRef.current.getBoundingClientRect();
       const elev = Math.min(Math.max(1, elevation), 5);
       const w = size.width + (elev - 1) * 2;
       const h = size.height + (elev - 1) * 2;
 
-      if (w == lastSize.w && h == lastSize.h) return;
       svgRef.current.style.width = `${w}`;
       svgRef.current.style.height = `${h}`;
-      setLastSize({ w, h });
 
       const s = {
         width: w - (elev - 1) * 2,
@@ -103,48 +102,89 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
     }
 
     function animateShow() {
-      localRef.current?.animate(
+      if (!localRef.current) return;
+      const element = localRef.current;
+
+      const targetHeight = element.scrollHeight;
+
+      const animate = element.animate(
         [
-          { transform: "scale(0.8)", opacity: 0 }, // Start smaller and transparent
-          { transform: "scale(1.1)", opacity: 1 }, // Overshoot to make it bouncy
-          { transform: "scale(1)", opacity: 1 }, // Settle at final size
+          {
+            height: "0px",
+            opacity: 0,
+          },
+          {
+            height: `${targetHeight * 1.1}px`, // Reduced overshoot to 110%
+            opacity: 1,
+            offset: 0.6,
+          },
+          {
+            height: `${targetHeight * 0.85}px`, // More gentle undershoot
+            opacity: 1,
+            offset: 0.75,
+          },
+          {
+            height: `${targetHeight * 1.02}px`, // Tiny overshoot
+            opacity: 1,
+            offset: 0.9,
+          },
+          {
+            height: `${targetHeight}px`, // Final height
+            opacity: 1,
+          },
         ],
         {
-          duration: 700, // Total animation duration
-          easing: "cubic-bezier(0.68, -0.6, 0.32, 1.6)", // Bouncier easing
-          fill: "forwards", // Keep the final state after animation
+          duration: 1000,
+          easing: "cubic-bezier(0.2, -0.6, 0.1, 1.6)", // Slightly less extreme bezier
+          fill: "forwards",
         }
       );
+
+      animateRef.current = animate;
     }
 
     function animateHide() {
-      localRef.current?.animate(
+      if (!localRef.current) return;
+
+      const element = localRef.current;
+      const startHeight = element.offsetHeight;
+
+      const animate = element.animate(
         [
-          { transform: "scale(1)", opacity: 1 }, // Start at full size and fully visible
-          { transform: "scale(1.1)", opacity: 0.5 }, // Slight overshoot for bounce
-          { transform: "scale(0.8)", opacity: 0 }, // Shrink and fade out
+          {
+            maxHeight: `${startHeight}px`,
+            transform: "translateY(0)",
+            opacity: 1,
+          },
+          {
+            maxHeight: "0px",
+            transform: "translateY(-10px)",
+            opacity: 0,
+          },
         ],
         {
-          duration: 700, // Total duration
-          easing: "cubic-bezier(0.68, -0.6, 0.32, 1.6)", // Bouncy easing
-          fill: "forwards", // Keep the final state after animation
+          duration: 800,
+          easing: "cubic-bezier(0.36, 0, 0.1, 1.5)", // More bouncy curve
+          // Alternative bouncier options:
+          // easing: "cubic-bezier(0.25, 0.1, 0.25, 2.0)"
+          // easing: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          fill: "forwards",
         }
       );
+
+      animateRef.current = animate;
     }
 
     return (
       <div
         ref={localRef}
         {...props}
-        className={cn(
-          className,
-          "h-fit relative overflow-hidden transition-all"
-        )}
+        className={cn(className, "relative  transition-all  overflow-hidden")}
       >
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg ref={svgRef} className="block"></svg>
         </div>
-        {props.children}
+        <div className="w-full p-4">{props.children}</div>
       </div>
     );
   }
