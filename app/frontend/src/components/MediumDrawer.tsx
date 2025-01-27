@@ -104,6 +104,7 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
     function animateShow() {
       if (!localRef.current) return;
       const element = localRef.current;
+      element.style.display = "block";
 
       const targetHeight = element.scrollHeight;
 
@@ -164,14 +165,14 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
         ],
         {
           duration: 800,
-          easing: "cubic-bezier(0.36, 0, 0.1, 1.5)", // More bouncy curve
-          // Alternative bouncier options:
-          // easing: "cubic-bezier(0.25, 0.1, 0.25, 2.0)"
-          // easing: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"
+          easing: "cubic-bezier(0.36, 0, 0.1, 1.5)",
           fill: "forwards",
         }
       );
 
+      animate.addEventListener("finish", () => {
+        element.style.display = "none";
+      });
       animateRef.current = animate;
     }
 

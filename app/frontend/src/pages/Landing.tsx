@@ -3,6 +3,7 @@ import Button from "../components/Button";
 import MediumDrawer from "../components/MediumDrawer";
 import { useState } from "react";
 import clsx from "clsx";
+import { RoughNotation } from "react-rough-notation";
 
 export default function Landing() {
   const [showDrawerMobileNav, setShowDrawerMobileNav] = useState(false);
@@ -78,7 +79,12 @@ export default function Landing() {
             Notebuk
           </h1>
           <p className="font-comic-neue text-sm md:text-xl text-center">
-            Capture ideas <span className="font-bold">anytime, anywhere</span>{" "}
+            Capture ideas{" "}
+            <span className="font-bold relative">
+              <RoughNotation type="underline" show padding={0}>
+                anytime, anywhere
+              </RoughNotation>{" "}
+            </span>{" "}
             by writing, drawing, and <br /> syncing notes seamlessly across all
             your devices
           </p>

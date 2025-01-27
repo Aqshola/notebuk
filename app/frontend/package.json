@@ -16,8 +16,10 @@
     "clsx": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-rough-notation": "^1.0.5",
     "react-scan": "^0.1.0",
     "react-svg": "^16.2.0",
+    "rough-notation": "^0.5.1",
     "roughjs": "^4.3.1",
     "tailwind-merge": "^2.6.0"
   },
