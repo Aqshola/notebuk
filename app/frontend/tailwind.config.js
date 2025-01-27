@@ -18,7 +18,7 @@ export default {
           red:'#dd4c46',
           white:"#ffffff",
           green:"#349b7c",
-          yellow:"#d7dd46",
+          yellow:"#FFC04F",
         }
       },
       transitionTimingFunction: {

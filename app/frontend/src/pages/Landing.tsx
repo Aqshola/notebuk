@@ -73,7 +73,25 @@ export default function Landing() {
         </div>
       </nav>
       <main>
-        <h1>Notebuk</h1>
+        <div className="mt-28 flex flex-col gap-6">
+          <h1 className="text-5xl md:text-8xl font-comic-neue font-medium text-primary-purple text-center">
+            Notebuk
+          </h1>
+          <p className="font-comic-neue text-sm md:text-xl text-center">
+            Capture ideas <span className="font-bold">anytime, anywhere</span>{" "}
+            by writing, drawing, and <br /> syncing notes seamlessly across all
+            your devices
+          </p>
+          <div className="flex justify-center gap-3 md:gap-x-9 items-center">
+            <Button variant={"third"} styleMode="sketch" size={"lg"}>
+              Join
+            </Button>
+            <span className="font-comic-neue">Or</span>
+            <Button variant={"outline-black"} styleMode="sketch" size={"lg"}>
+              Write
+            </Button>
+          </div>
+        </div>
       </main>
     </div>
   );

@@ -3,7 +3,7 @@ const PRIMARY={
     'RED':"#dd4c46",
     'WHITE':"#ffffff",
     'GREEN':"#349b7c",
-    'YELLOW':"#d7dd46",
+    'YELLOW':"#FFC04F",
     'BLACK':"#000000"
 }
 const COLOR_THEME={

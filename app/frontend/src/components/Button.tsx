@@ -35,6 +35,7 @@ const buttonVariants = cva(
         "outline-black":
           "bg-primary-white text-black hover:bg-primary-purple/10",
         secondary: "text-white  hover:bg-secondary/80",
+        third: "text-black  hover:bg-secondary/80",
         ghost: "",
       },
       size: {
@@ -78,6 +79,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "outline-black": "border border-black",
       secondary: "bg-primary-green",
       ghost: "bg-primary-white",
+      third: "bg-primary-yellow",
     };
 
     const BUTTON_FILL_SKETCH_COLOR = {
@@ -86,6 +88,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       "outline-primary": COLOR_THEME.primary.PURPLE,
       "outline-black": COLOR_THEME.primary.BLACK,
       secondary: COLOR_THEME.primary.GREEN,
+      third: COLOR_THEME.primary.YELLOW,
       ghost: COLOR_THEME.primary.WHITE,
     };
     const localRef = useRef<HTMLButtonElement>(null);
