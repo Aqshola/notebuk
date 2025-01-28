@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { cn } from "../libs/common";
 import { hachureFill, line, rectangle, SEED } from "../libs/wired";
 
@@ -9,7 +9,7 @@ interface MediumDrawerProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
-  ({ className, elevation = 1, display = false, ...props }) => {
+  ({ className, elevation = 1, display = false, ...props }, ref) => {
     const animateRef = useRef<Animation | null>(null);
     const localRef = useRef<HTMLDivElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
@@ -178,12 +178,24 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
 
     return (
       <div
-        ref={localRef}
+        ref={(parameterRef) => {
+          if (!parameterRef) return;
+          if (typeof ref === "function") {
+            ref(parameterRef);
+          }
+          // If ref is a MutableRefObject
+          else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement>).current =
+              parameterRef;
+          }
+          (localRef as React.MutableRefObject<HTMLDivElement>).current =
+            parameterRef;
+        }}
         {...props}
         className={cn(className, "relative  transition-all  overflow-hidden")}
       >
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
-          <svg ref={svgRef} className="block"></svg>
+          <svg ref={svgRef} className="block svg-wired"></svg>
         </div>
         <div className="w-full p-4">{props.children}</div>
       </div>

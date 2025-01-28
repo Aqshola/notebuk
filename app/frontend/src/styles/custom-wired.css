@@ -15,11 +15,11 @@
     pointer-events: none;
 }
 
-svg {
+.svg-wired {
     display: block;
 }
 
-path {
+.svg-wired path {
     stroke: var(--wired-card-background-fill, currentColor);
     stroke-width: 0.7;
     fill: transparent;

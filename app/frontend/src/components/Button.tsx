@@ -214,7 +214,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={(parameterRef) => {
           if (!parameterRef) return;
-          ref = ref;
+          if (typeof ref === "function") {
+            ref(parameterRef);
+          }
+          // If ref is a MutableRefObject
+          else if (ref) {
+            (ref as React.MutableRefObject<HTMLButtonElement>).current =
+              parameterRef;
+          }
           (localRef as React.MutableRefObject<HTMLButtonElement>).current =
             parameterRef;
         }}
@@ -227,7 +234,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
-          <svg className="block" ref={svgRef}></svg>
+          <svg className="block svg-wired" ref={svgRef}></svg>
         </div>
         <span className="relative z-30">{props.children}</span>
       </button>
