@@ -43,7 +43,11 @@ export default function Landing() {
           </div>
           {/* FOR MOBILE */}
           <div className="col-span-6 md:hidden flex-col flex justify-start mt-4 ">
-            <MediumDrawer className="w-full" display={showDrawerMobileNav}>
+            <MediumDrawer
+              className="w-full"
+              display={showDrawerMobileNav}
+              elevation={3}
+            >
               <div className="w-full flex flex-col">
                 <Button variant={"ghost"} styleMode="sketch">
                   About

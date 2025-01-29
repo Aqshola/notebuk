@@ -111,3 +111,40 @@ export function hachureFill(points: Point[], seed: number): SVGElement {
   const ops = hf.fillPolygon(points, options(seed));
   return createPathNode(ops, null);
 }
+
+export function generateSVGElevationSquare(refSvg:SVGSVGElement, elev:number,s:{width:number,height:number}){
+   for (let i = 1; i < elev; i++) {
+        line(
+          refSvg,
+          i * 2,
+          s.height + i * 2,
+          s.width + i * 2,
+          s.height + i * 2,
+          SEED
+        ).style.opacity = `${(75 - i * 10) / 100}`;
+        line(
+          refSvg,
+          s.width + i * 2,
+          s.height + i * 2,
+          s.width + i * 2,
+          i * 2,
+          SEED
+        ).style.opacity = `${(75 - i * 10) / 100}`;
+        line(
+          refSvg,
+          i * 2,
+          s.height + i * 2,
+          s.width + i * 2,
+          s.height + i * 2,
+          SEED
+        ).style.opacity = `${(75 - i * 10) / 100}`;
+        line(
+          refSvg,
+          s.width + i * 2,
+          s.height + i * 2,
+          s.width + i * 2,
+          i * 2,
+          SEED
+        ).style.opacity = `${(75 - i * 10) / 100}`;
+      }
+}

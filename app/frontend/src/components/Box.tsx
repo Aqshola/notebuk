@@ -1,9 +1,13 @@
-import { cva, VariantProps } from "class-variance-authority";
-import React, { LegacyRef, useEffect, useRef, useState } from "react";
-import { cn } from "../libs/common";
+import React, { useEffect, useRef, useState } from "react";
+
 import "../styles/custom-wired.css";
-import { hachureFill, line, rectangle, SEED } from "../libs/wired";
-import COLOR_THEME from "../constants/color";
+import {
+  generateSVGElevationSquare,
+  line,
+  rectangle,
+  SEED,
+} from "../libs/wired";
+
 import clsx from "clsx";
 
 interface MediumDrawerProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -24,10 +28,6 @@ const Box = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
   ) => {
     const localRef = useRef<HTMLDivElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
-    const [lastSize, setLastSize] = useState({
-      w: 0,
-      h: 0,
-    });
 
     useEffect(() => {
       if (!localRef.current && !svgRef.current) {
@@ -58,7 +58,6 @@ const Box = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
 
       svgRef.current.style.width = `${w}`;
       svgRef.current.style.height = `${h}`;
-      setLastSize({ w, h });
 
       const s = {
         width: w - (elev - 1) * 2,
@@ -66,40 +65,7 @@ const Box = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
       };
 
       rectangle(svgRef.current, 0, 0, s.width, s.height, SEED);
-      for (let i = 1; i < elev; i++) {
-        line(
-          svgRef.current,
-          i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          s.height + i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          s.width + i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          s.height + i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-        line(
-          svgRef.current,
-          s.width + i * 2,
-          s.height + i * 2,
-          s.width + i * 2,
-          i * 2,
-          SEED
-        ).style.opacity = `${(75 - i * 10) / 100}`;
-      }
+      generateSVGElevationSquare(svgRef.current, elev, s);
     }
 
     return (
