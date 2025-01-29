@@ -2,7 +2,13 @@ import { cva, VariantProps } from "class-variance-authority";
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import { cn } from "../libs/common";
 import "../styles/custom-wired.css";
-import { hachureFill, line, rectangle, SEED } from "../libs/wired";
+import {
+  generateSVGElevationSquare,
+  hachureFill,
+  line,
+  rectangle,
+  SEED,
+} from "../libs/wired";
 import COLOR_THEME from "../constants/color";
 
 const buttonVariants = cva(
@@ -162,40 +168,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (isOutline && variant) {
         svgRef.current.style.color = BUTTON_FILL_SKETCH_COLOR[variant];
         rectangle(svgRef.current, 0, 0, s.width, s.height, SEED);
-        for (let i = 1; i < elev; i++) {
-          line(
-            svgRef.current,
-            i * 2,
-            s.height + i * 2,
-            s.width + i * 2,
-            s.height + i * 2,
-            SEED
-          ).style.opacity = `${(75 - i * 10) / 100}`;
-          line(
-            svgRef.current,
-            s.width + i * 2,
-            s.height + i * 2,
-            s.width + i * 2,
-            i * 2,
-            SEED
-          ).style.opacity = `${(75 - i * 10) / 100}`;
-          line(
-            svgRef.current,
-            i * 2,
-            s.height + i * 2,
-            s.width + i * 2,
-            s.height + i * 2,
-            SEED
-          ).style.opacity = `${(75 - i * 10) / 100}`;
-          line(
-            svgRef.current,
-            s.width + i * 2,
-            s.height + i * 2,
-            s.width + i * 2,
-            i * 2,
-            SEED
-          ).style.opacity = `${(75 - i * 10) / 100}`;
-        }
+        generateSVGElevationSquare(svgRef.current, elev, s);
       }
     }
 
