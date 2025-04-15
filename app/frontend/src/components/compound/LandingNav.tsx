@@ -36,6 +36,7 @@ export default function LandingNav() {
           </button>
         </div>
         {/* FOR MOBILE */}
+        
         <div className="col-span-6 md:hidden flex-col flex justify-start mt-4 ">
           <MediumDrawer className="w-full" display={showDrawerMobileNav}>
             <div className="w-full flex flex-col">

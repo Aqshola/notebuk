@@ -104,7 +104,9 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
     function animateShow() {
       if (!localRef.current) return;
       const element = localRef.current;
+      element.classList.remove("max-h-0")
       element.style.display = "block";
+
 
       const targetHeight = element.scrollHeight;
 
@@ -192,7 +194,7 @@ const MediumDrawer = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
             parameterRef;
         }}
         {...props}
-        className={cn(className, "relative  transition-all  overflow-hidden")}
+        className={cn(className, "relative transition-all  overflow-hidden max-h-0 ")}
       >
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg ref={svgRef} className="block svg-wired"></svg>
