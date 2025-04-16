@@ -113,7 +113,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       renderDrawHandDrawn();
 
       const resizeObserver = new ResizeObserver(() => {
-        console.log("didi");
         renderDrawHandDrawn();
       });
 
