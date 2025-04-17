@@ -31,7 +31,7 @@ export default function Landing() {
     const bulbPath =
       bulbSvgRef.current?.querySelectorAll<SVGPathElement>("path");
 
-    const tl = gsap.timeline({ defaults: { duration: 2 } });
+    const tl = gsap.timeline();
 
     //SETTER
     gsap.set(titleRef.current, {
@@ -45,7 +45,6 @@ export default function Landing() {
 
     gsap.set(descRef.current, {
       translateY: -100,
-
       opacity: 0,
       zIndex: -10,
     });
@@ -60,13 +59,13 @@ export default function Landing() {
     tl.to(navRef.current, {
       translateY: 0,
       ease: "bounce",
-      duration: 1,
+      duration: 0.6,
     });
 
     tl.to(titleRef.current, {
       opacity: 1,
       scale: 1,
-      duration: 1,
+      duration: 0.5,
       ease: "bounce",
     });
 
