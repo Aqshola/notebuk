@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 
 export default function Landing() {
   //REF ANIMATE
-  const navRef = useRef<HTMLDivElement>(null);
+
   const newSvgRef = useRef<SVGSVGElement>(null);
   const bulbSvgRef = useRef<SVGSVGElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -18,11 +18,11 @@ export default function Landing() {
 
   useEffect(() => {
     if (
-      !newSvgRef.current ||
       !titleRef.current ||
       !bulbSvgRef.current ||
       !descRef.current ||
-      !buttonBoxRef.current
+      !buttonBoxRef.current ||
+      !newSvgRef.current
     )
       return;
 
@@ -39,10 +39,6 @@ export default function Landing() {
       scale: 0,
     });
 
-    gsap.set(navRef.current, {
-      translateY: -100,
-    });
-
     gsap.set(descRef.current, {
       translateY: -100,
       opacity: 0,
@@ -54,12 +50,6 @@ export default function Landing() {
 
       opacity: 0,
       zIndex: 0,
-    });
-
-    tl.to(navRef.current, {
-      translateY: 0,
-      ease: "bounce",
-      duration: 0.6,
     });
 
     tl.to(titleRef.current, {
@@ -137,13 +127,14 @@ export default function Landing() {
         <title>Notebuk</title>
       </Helmet>
 
-      <div className="max-w-screen-2xl mx-auto  h-screen flex flex-col">
-        <div ref={navRef}>
+      <div className="max-w-screen-2xl mx-auto  h-screen flex flex-col relative">
+        <div className="absolute top-0 left-0 bottom-0 right-0 w-screen  h-screen bg-blank-paper-overlay"></div>
+        <div>
           <LandingNav />
         </div>
         <main className="flex-1 flex flex-col">
           <div className="mt-28 flex flex-col gap-6">
-            <div className="relative flex  mx-auto  w-fit bg-white">
+            <div className="relative flex  mx-auto">
               {/* NEW LOGO */}
               <div className="absolute -top-16 left-0">
                 <svg

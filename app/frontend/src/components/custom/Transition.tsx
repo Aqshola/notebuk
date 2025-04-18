@@ -20,7 +20,7 @@ const TransitionComponent = ({ children }: Props) => {
     <>
       <div
         ref={bgRef}
-        className="bg-primary-purple fixed -translate-x-[100%] z-50 w-screen h-screen top-0"
+        className="bg-natural-paper-overlay fixed -translate-x-[100%] z-50 w-screen h-screen top-0"
       ></div>
       <SwitchTransition>
         <Transition

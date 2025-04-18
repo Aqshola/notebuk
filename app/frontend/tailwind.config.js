@@ -32,7 +32,7 @@ export default {
       },
       animation: {
         'bounce-small': 'bounce-small 0.5s ease-in-out',
-      }
+      },
     },
   },
   plugins: [],

@@ -5,7 +5,6 @@ import "../styles/custom-wired.css";
 import {
   generateSVGElevationSquare,
   hachureFill,
-  line,
   rectangle,
   SEED,
 } from "../libs/wired";
@@ -22,10 +21,7 @@ const buttonVariants = cva(
     font-medium ring-offset-background 
     transition-colors
     transition-transform 
-    focus-visible:outline-none 
-    focus-visible:ring-2 
-    focus-visible:ring-ring 
-    focus-visible:ring-offset-2 
+   
     disabled:pointer-events-none 
     disabled:opacity-50 
     [&_svg]:pointer-events-none 
@@ -34,12 +30,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-white  hover:bg-primary-purple/90",
-        destructive: "text-white hover:bg-primary-red/90",
-        "outline-primary":
-          "bg-primary-white text-primary-purple hover:bg-primary-purple/10",
-        "outline-black":
-          "bg-primary-white text-black hover:bg-primary-purple/10",
+        default: "text-white  ",
+        destructive: "text-white ",
+        "outline-primary": "bg-primary-white text-primary-purple ",
+        "outline-black": "bg-primary-white text-black ",
         secondary: "text-white  hover:bg-secondary/80",
         third: "text-black  hover:bg-secondary/80",
         ghost: "",
@@ -96,6 +90,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: COLOR_THEME.primary.GREEN,
       third: COLOR_THEME.primary.YELLOW,
       ghost: COLOR_THEME.primary.WHITE,
+    };
+
+    const BUTTON_SKETCH_DROP_SHADOW = {
+      default:
+        "hover:drop-shadow-[5px_5px_#3933a7] active:drop-shadow-none focus:drop-shadow-[5px_5px_#3933a7]",
+      destructive: "",
+      "outline-primary": "",
+      "outline-black":
+        "hover:drop-shadow-[5px_5px_#000000] active:drop-shadow-none focus:drop-shadow-[5px_5px_#000000]",
+      secondary: "",
+      ghost: "",
+      third:
+        "hover:drop-shadow-[5px_5px_#aa6f01] active:drop-shadow-none focus:drop-shadow-[5px_5px_#aa6f01]",
     };
     const localRef = useRef<HTMLButtonElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
@@ -202,12 +209,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           buttonVariants({ variant, size, className }),
           styleMode === "solid" && variant && BUTTON_FILL_SOLID_COLOR[variant],
           styleMode == "solid" && "font-poppins",
-          styleMode == "sketch" && "font-comic-neue"
+          styleMode == "sketch" && "font-comic-neue",
+          styleMode == "sketch" &&
+            variant &&
+            BUTTON_SKETCH_DROP_SHADOW[variant],
+          "focus:outline-none focus:ring-0 outline-none",
+          "transition-all hover:-translate-y-1.5  active:scale-95 active:translate-y-0 filter  focus:-translate-y-1.5"
         )}
         {...props}
       >
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
-          <svg className="block svg-wired" ref={svgRef}></svg>
+          <svg className="block svg-wired " ref={svgRef}></svg>
         </div>
         <span className="relative z-30">{props.children}</span>
       </button>
