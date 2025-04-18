@@ -1,6 +1,7 @@
 import { ReactSVG } from "react-svg";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import NotFoundSpin from "../../components/custom/NotFoundSpin";
 
 export default function NotFound() {
   const navigate = useNavigate();
@@ -10,11 +11,11 @@ export default function NotFound() {
   }
   return (
     <div className="h-screen">
-      <div className="mt-40 mx-auto w-fit font-comic-neue text-lg fontsem">
+      <div className="mt-28 mx-auto w-fit font-comic-neue text-lg fontsem">
         Oooops, your page is
       </div>
       <div className="mx-auto w-fit mt-10">
-        <ReactSVG src="/assets/images/notfound.svg" />
+        <NotFoundSpin />
       </div>
       <div className="mx-auto w-fit mt-10">
         <Button styleMode="sketch" size={"lg"} onClick={handleBack}>
