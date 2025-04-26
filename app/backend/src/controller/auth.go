@@ -33,7 +33,6 @@ func (inj *AppInjection) SignUp(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 
 	if err != nil {
-
 		common.SendJSONResponse(w, http.StatusBadRequest, constants.ERROR_FAILED_DECODE_PAYLOOAD, nil, constants.RESPONSE_DECODE_PAYLOAD_ERROR)
 		return
 	}

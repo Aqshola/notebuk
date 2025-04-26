@@ -13,8 +13,8 @@ import (
 func InitDB() *sqlx.DB {
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASS")
-	fmt.Println(user, pass)
-	connStr := fmt.Sprintf("user=%s password=%s host=localhost sslmode=disable", user, pass)
+	dbName := os.Getenv("DB_NAME")
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=localhost sslmode=disable", user, pass, dbName)
 
 	db, err := sqlx.Connect("postgres", connStr)
 	if err != nil {
