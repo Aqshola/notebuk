@@ -1,5 +1,5 @@
 import { ReactSVG } from "react-svg";
-import Button from "../../components/Button";
+import Button from "../../components/atomic/Button";
 import { useNavigate } from "react-router-dom";
 import NotFoundSpin from "../../components/custom/NotFoundSpin";
 

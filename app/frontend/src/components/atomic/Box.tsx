@@ -6,7 +6,7 @@ import {
   line,
   rectangle,
   SEED,
-} from "../libs/wired";
+} from "@/libs/wired";
 
 import clsx from "clsx";
 

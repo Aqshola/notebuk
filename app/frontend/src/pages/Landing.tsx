@@ -1,9 +1,9 @@
-import Button from "../components/Button";
+import Button from "@/components/atomic/Button";
 import { RoughNotation } from "react-rough-notation";
 
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import LandingNav from "../components/compound/LandingNav";
+import LandingNav from "@/components/compound/LandingNav";
 import gsap from "gsap";
 import { useEffect, useRef } from "react";
 

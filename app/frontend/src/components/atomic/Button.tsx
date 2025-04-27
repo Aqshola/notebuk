@@ -1,14 +1,15 @@
 import { cva, VariantProps } from "class-variance-authority";
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
-import { cn } from "../libs/common";
-import "../styles/custom-wired.css";
+import { cn } from "@/libs/common";
+import "@/styles/custom-wired.css";
 import {
   generateSVGElevationSquare,
   hachureFill,
   rectangle,
   SEED,
-} from "../libs/wired";
-import COLOR_THEME from "../constants/color";
+} from "@/libs/wired";
+import COLOR_THEME from "@/constants/color";
+import { CircleStackIcon } from "@heroicons/react/24/outline";
 
 const buttonVariants = cva(
   `
@@ -57,6 +58,7 @@ interface ButtonProps
   asChild?: boolean;
   elevation?: number;
   styleMode?: "solid" | "sketch";
+  loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -111,6 +113,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       h: 0,
     });
 
+    const [localLoading, setLocalLoading] = useState(props.loading);
+
     useEffect(() => {
       if (!localRef.current && !svgRef.current) {
         return;
@@ -129,6 +133,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         resizeObserver.disconnect();
       };
     }, []);
+
+    useEffect(() => {
+      setLocalLoading(props.loading);
+    }, [props.loading]);
 
     function renderDrawHandDrawn() {
       if (!variant) return;
@@ -221,7 +229,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg className="block svg-wired " ref={svgRef}></svg>
         </div>
-        <span className="relative z-30">{props.children}</span>
+        <span className="relative z-20">
+          {localLoading && "Loading"}
+          {!localLoading && props.children}
+        </span>
+        {/* <span className="relative z-30"></span> */}
       </button>
     );
   }

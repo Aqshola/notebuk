@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
-import Button from "../../components/Button";
-import LandingNav from "../../components/compound/LandingNav";
-import Input from "../../components/atomic/Input";
-import { useEffect, useRef } from "react";
+import Button from "@/components/atomic/Button";
+import LandingNav from "@/components/compound/LandingNav";
+import Input from "@/components/atomic/Input";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import PersonMovingEye from "../../components/custom/PersonMovingEye";
+import PersonMovingEye from "@/components/custom/PersonMovingEye";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { FORM_SCHEMA_SIGNUP } from "./formSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { postSignUp, ParamPostSignUp } from "@/services/auth/auth";
+import FormField from "@/components/atomic/FormField";
+import { useModalDialog } from "@/components/atomic/Dialog";
 
 export default function SignUp() {
   const WORD_LOGIN = "Let's join us!";
@@ -14,6 +22,35 @@ export default function SignUp() {
 
   const brandRef = useRef<HTMLDivElement[]>([]);
 
+  const { ModalDialog: DialogStatus, showDialog: showDialogStatus } =
+    useModalDialog();
+  const formConfig = useForm<z.infer<typeof FORM_SCHEMA_SIGNUP>>({
+    resolver: zodResolver(FORM_SCHEMA_SIGNUP),
+    defaultValues: {
+      email: "",
+      name: "",
+      password: "",
+    },
+  });
+
+  const mutationSignUp = useMutation({
+    mutationFn: (param: ParamPostSignUp) => postSignUp(param),
+    onSuccess: (data) => {
+      showDialogStatus({
+        title: "Berhasil Sign Up",
+        content: "Selamat bergabung, Silahkan cek email untuk kode OTP",
+      });
+    },
+    onError: (error) => {
+      showDialogStatus({ title: "Gagal Sign Up", content: error.message });
+    },
+  });
+
+  function callbackSubmit(data: z.infer<typeof FORM_SCHEMA_SIGNUP>) {
+    mutationSignUp.mutate(data);
+  }
+
+  //ANIMATION
   useEffect(() => {
     const tl = gsap.timeline({
       delay: 0.5,
@@ -109,21 +146,49 @@ export default function SignUp() {
           </div>
 
           <span className="font-comic-neue text-center">Or</span>
-          <div className="w-64 gap-y-2 flex flex-col">
-            <div ref={(el) => (inputRef.current[0] = el!)}>
-              <Input type="text" placeholder="Name" className="w-full" />
+          <form onSubmit={formConfig.handleSubmit(callbackSubmit)} className="">
+            <div className="w-64 gap-y-2 flex flex-col">
+              <div ref={(el) => (inputRef.current[0] = el!)}>
+                <FormField error={formConfig.formState.errors.name}>
+                  <Input
+                    type="text"
+                    placeholder="Name"
+                    className="w-full"
+                    {...formConfig.register("name")}
+                  />
+                </FormField>
+              </div>
+              <div ref={(el) => (inputRef.current[1] = el!)}>
+                <FormField error={formConfig.formState.errors.email}>
+                  <Input
+                    type="text"
+                    placeholder="Email"
+                    className="w-full"
+                    {...formConfig.register("email")}
+                  />
+                </FormField>
+              </div>
+              <div ref={(el) => (inputRef.current[2] = el!)}>
+                <FormField error={formConfig.formState.errors.password}>
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    {...formConfig.register("password")}
+                  />
+                </FormField>
+              </div>
             </div>
-            <div ref={(el) => (inputRef.current[1] = el!)}>
-              <Input type="email" placeholder="Email" className="w-full" />
-            </div>
-            <div ref={(el) => (inputRef.current[2] = el!)}>
-              <Input type="password" placeholder="Password" />
-            </div>
-          </div>
 
-          <Button styleMode="sketch" size={"lg"} className="w-fit mx-auto">
-            Sign Up
-          </Button>
+            <div className=" flex justify-center mt-4">
+              <Button
+                styleMode="sketch"
+                size={"lg"}
+                loading={mutationSignUp.isPending}
+              >
+                Sign Up
+              </Button>
+            </div>
+          </form>
           <span className="text-xs font-comic-neue text-center">
             Already have an account?{" "}
             <Link to={"/sign-in"}>
@@ -132,6 +197,8 @@ export default function SignUp() {
           </span>
         </div>
       </div>
+
+      <DialogStatus />
     </div>
   );
 }

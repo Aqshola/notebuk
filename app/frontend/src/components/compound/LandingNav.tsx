@@ -1,5 +1,5 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import Button from "../../components/Button";
+import Button from "../atomic/Button";
 import MediumDrawer from "../../components/MediumDrawer";
 import { useState } from "react";
 import clsx from "clsx";
@@ -36,7 +36,7 @@ export default function LandingNav() {
           </button>
         </div>
         {/* FOR MOBILE */}
-        
+
         <div className="col-span-6 md:hidden flex-col flex justify-start mt-4 ">
           <MediumDrawer className="w-full" display={showDrawerMobileNav}>
             <div className="w-full flex flex-col">
