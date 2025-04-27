@@ -57,8 +57,8 @@ func (inj *AppInjection) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	verificationData, err := userCodeVerifRepository.InsertCodeVerification(insertedUser.Id)
-	if err != nil {
+	_, errCodeVerif := userCodeVerifRepository.InsertCodeVerification(insertedUser.Id)
+	if errCodeVerif != nil {
 		errMsg := fmt.Sprintf("FAILED CREATED VERIFICATION CODE: %s", err.Error())
 		common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_DATABASE_CALL_INSERT, nil, errMsg)
 		return
@@ -70,18 +70,18 @@ func (inj *AppInjection) SignUp(w http.ResponseWriter, r *http.Request) {
 		Name:   insertedUser.Name,
 	}
 
-	emailData := map[string]interface{}{
-		"Username": insertedUser.Name,
-		"Code":     verificationData.Code,
-	}
+	// emailData := map[string]interface{}{
+	// 	"Username": insertedUser.Name,
+	// 	"Code":     verificationData.Code,
+	// }
 
-	templatePath, _ := filepath.Abs("src/lib/mail/template/verif-mail.html")
-	err = mail.SendEmailHTML(insertedUser.Email, "Notebuk Verification Mail", emailData, templatePath)
-	if err != nil {
-		errMsg := fmt.Sprintf("FAILED SEND EMAIL: %s", err.Error())
-		common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_THRD_EMAIL_FAIL_SEND, nil, errMsg)
-		return
-	}
+	// templatePath, _ := filepath.Abs("src/lib/mail/template/verif-mail.html")
+	// err = mail.SendEmailHTML(insertedUser.Email, "Notebuk Verification Mail", emailData, templatePath)
+	// if err != nil {
+	// 	errMsg := fmt.Sprintf("FAILED SEND EMAIL: %s", err.Error())
+	// 	common.SendJSONResponse(w, http.StatusInternalServerError, constants.ERROR_THRD_EMAIL_FAIL_SEND, nil, errMsg)
+	// 	return
+	// }
 	common.SendJSONResponse(w, http.StatusOK, constants.NO_ERROR, responseData, constants.RESPONSE_AUTH_SIGNUP_SUCCESS)
 }
 
