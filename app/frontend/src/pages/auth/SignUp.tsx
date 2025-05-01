@@ -47,7 +47,11 @@ export default function SignUp() {
   });
 
   function callbackSubmit(data: z.infer<typeof FORM_SCHEMA_SIGNUP>) {
-    mutationSignUp.mutate(data);
+    // mutationSignUp.mutate(data);
+    showDialogStatus({
+      title: "Berhasil Sign Up",
+      content: "Selamat bergabung, Silahkan cek email untuk kode OTP",
+    });
   }
 
   //ANIMATION

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import "../styles/custom-wired.css";
+import "@/styles/custom-wired.css";
 import {
   generateSVGElevationSquare,
   line,

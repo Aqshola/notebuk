@@ -1,4 +1,5 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Tally3Icon } from "lucide-react";
+
 import Button from "../atomic/Button";
 import MediumDrawer from "../../components/MediumDrawer";
 import { useState } from "react";
@@ -28,11 +29,11 @@ export default function LandingNav() {
             onClick={handleToggleDrawerMobileNav}
             className={clsx(
               "transition-transform",
-              showDrawerMobileNav && "rotate-90",
-              !showDrawerMobileNav && "rotate-0"
+              showDrawerMobileNav && "rotate-0",
+              !showDrawerMobileNav && "-rotate-90"
             )}
           >
-            <Bars3Icon className="w-7 h-7" />
+            <Tally3Icon className="w-7 h-7" />
           </button>
         </div>
         {/* FOR MOBILE */}

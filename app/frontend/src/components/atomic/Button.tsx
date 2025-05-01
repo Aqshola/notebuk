@@ -1,5 +1,5 @@
 import { cva, VariantProps } from "class-variance-authority";
-import React, { LegacyRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "@/libs/common";
 import "@/styles/custom-wired.css";
 import {
@@ -9,7 +9,9 @@ import {
   SEED,
 } from "@/libs/wired";
 import COLOR_THEME from "@/constants/color";
-import { CircleStackIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
+import gsap from "gsap";
+import { LoaderCircle } from "lucide-react";
 
 const buttonVariants = cva(
   `
@@ -70,6 +72,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       asChild = false,
       elevation = 1,
       styleMode = "solid",
+      loading = false,
       ...props
     },
     ref
@@ -108,12 +111,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
     const localRef = useRef<HTMLButtonElement>(null);
     const svgRef = useRef<SVGSVGElement>(null);
+    const contentRef = useRef<HTMLSpanElement>(null);
+    const loadingRef = useRef<HTMLSpanElement>(null);
+
     const [lastSize, setLastSize] = useState({
       w: 0,
       h: 0,
     });
 
-    const [localLoading, setLocalLoading] = useState(props.loading);
+    const [localLoading, setLocalLoading] = useState(loading);
 
     useEffect(() => {
       if (!localRef.current && !svgRef.current) {
@@ -135,8 +141,59 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }, []);
 
     useEffect(() => {
-      setLocalLoading(props.loading);
-    }, [props.loading]);
+      //ANIMATING
+      if (!loadingRef.current || !contentRef.current) return;
+      const tl = gsap.timeline();
+      if (loading) {
+        gsap.set(contentRef.current, {
+          translateY: 0,
+          autoAlpha: 1, // content is visible
+        });
+
+        gsap.set(loadingRef.current, {
+          translateY: 20,
+          autoAlpha: 0, // loading is hidden
+        });
+
+        tl.to(contentRef.current, {
+          translateY: 20,
+          autoAlpha: 0,
+          duration: 0.2,
+        });
+
+        tl.to(loadingRef.current, {
+          translateY: 0,
+          autoAlpha: 1,
+          duration: 0.2,
+        });
+      }
+
+      if (!loading) {
+        gsap.set(contentRef.current, {
+          translateY: 20,
+          autoAlpha: 0, // opacity: 0 + visibility: hidden
+        });
+
+        gsap.set(loadingRef.current, {
+          translateY: 0,
+          autoAlpha: 1, // opacity: 1 + visibility: visible
+        });
+
+        tl.to(loadingRef.current, {
+          translateY: -20,
+          autoAlpha: 0,
+          duration: 0.2,
+        });
+
+        tl.to(contentRef.current, {
+          translateY: 0,
+          autoAlpha: 1,
+          duration: 0.2,
+        });
+      }
+
+      setLocalLoading(loading);
+    }, [loading]);
 
     function renderDrawHandDrawn() {
       if (!variant) return;
@@ -200,6 +257,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
+        disabled={props.disabled || localLoading}
         ref={(parameterRef) => {
           if (!parameterRef) return;
           if (typeof ref === "function") {
@@ -229,11 +287,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg className="block svg-wired " ref={svgRef}></svg>
         </div>
-        <span className="relative z-20">
-          {localLoading && "Loading"}
-          {!localLoading && props.children}
+        <span ref={loadingRef} className={clsx("absolute z-20 invisible")}>
+          <LoaderCircle className="animate-spin" />
         </span>
-        {/* <span className="relative z-30"></span> */}
+        <span ref={contentRef} className={clsx("relative z-20 invisible ")}>
+          {props.children}
+        </span>
       </button>
     );
   }
