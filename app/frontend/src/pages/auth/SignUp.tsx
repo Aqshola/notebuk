@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@/components/atomic/Button";
 import LandingNav from "@/components/compound/LandingNav";
 import Input from "@/components/atomic/Input";
@@ -13,14 +13,19 @@ import { useMutation } from "@tanstack/react-query";
 import { postSignUp, ParamPostSignUp } from "@/services/auth/auth";
 import FormField from "@/components/atomic/FormField";
 import { useModalDialog } from "@/components/atomic/Dialog";
+import useGlobalStore from "@/stores/global";
 
 export default function SignUp() {
   const WORD_LOGIN = "Let's join us!";
+
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const inputRef = useRef<HTMLDivElement[]>([]);
 
   const brandRef = useRef<HTMLDivElement[]>([]);
+
+  const navigate = useNavigate();
+  const globalStore = useGlobalStore((state) => state);
 
   const { ModalDialog: DialogStatus, showDialog: showDialogStatus } =
     useModalDialog();
@@ -35,23 +40,29 @@ export default function SignUp() {
 
   const mutationSignUp = useMutation({
     mutationFn: (param: ParamPostSignUp) => postSignUp(param),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       showDialogStatus({
         title: "Berhasil Sign Up",
-        content: "Selamat bergabung, Silahkan cek email untuk kode OTP",
+        message: "Selamat bergabung, Silahkan cek email untuk kode OTP",
       });
+
+      const isOk = await showDialogStatus({
+        title: "Berhasil Sign Up",
+        message: "Selamat bergabung, Silahkan cek email untuk kode OTP",
+      });
+
+      if (isOk) {
+        navigate("/verify-otp");
+        globalStore.setLoginEmailGlobal(formConfig.getValues("email"));
+      }
     },
     onError: (error) => {
-      showDialogStatus({ title: "Gagal Sign Up", content: error.message });
+      showDialogStatus({ title: "Gagal Sign Up", message: error.message });
     },
   });
 
-  function callbackSubmit(data: z.infer<typeof FORM_SCHEMA_SIGNUP>) {
-    // mutationSignUp.mutate(data);
-    showDialogStatus({
-      title: "Berhasil Sign Up",
-      content: "Selamat bergabung, Silahkan cek email untuk kode OTP",
-    });
+  async function callbackSubmit(data: z.infer<typeof FORM_SCHEMA_SIGNUP>) {
+    mutationSignUp.mutate(data);
   }
 
   //ANIMATION

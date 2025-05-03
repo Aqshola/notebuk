@@ -142,55 +142,56 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     useEffect(() => {
       //ANIMATING
-      if (!loadingRef.current || !contentRef.current) return;
-      const tl = gsap.timeline();
-      if (loading) {
-        gsap.set(contentRef.current, {
-          translateY: 0,
-          autoAlpha: 1, // content is visible
-        });
+      // if (!loadingRef.current || !contentRef.current) return;
+      // const tl = gsap.timeline();
+      // console.log(loading, "dadadadad");
+      // if (loading) {
+      //   gsap.set(contentRef.current, {
+      //     translateY: 0,
+      //     autoAlpha: 1, // content is visible
+      //   });
 
-        gsap.set(loadingRef.current, {
-          translateY: 20,
-          autoAlpha: 0, // loading is hidden
-        });
+      //   gsap.set(loadingRef.current, {
+      //     translateY: 20,
+      //     autoAlpha: 0, // loading is hidden
+      //   });
 
-        tl.to(contentRef.current, {
-          translateY: 20,
-          autoAlpha: 0,
-          duration: 0.2,
-        });
+      //   tl.to(contentRef.current, {
+      //     translateY: 20,
+      //     autoAlpha: 0,
+      //     duration: 0.2,
+      //   });
 
-        tl.to(loadingRef.current, {
-          translateY: 0,
-          autoAlpha: 1,
-          duration: 0.2,
-        });
-      }
+      //   tl.to(loadingRef.current, {
+      //     translateY: 0,
+      //     autoAlpha: 1,
+      //     duration: 0.2,
+      //   });
+      // }
 
-      if (!loading) {
-        gsap.set(contentRef.current, {
-          translateY: 20,
-          autoAlpha: 0, // opacity: 0 + visibility: hidden
-        });
+      // if (!loading) {
+      //   gsap.set(contentRef.current, {
+      //     translateY: 20,
+      //     autoAlpha: 0, // opacity: 0 + visibility: hidden
+      //   });
 
-        gsap.set(loadingRef.current, {
-          translateY: 0,
-          autoAlpha: 1, // opacity: 1 + visibility: visible
-        });
+      //   gsap.set(loadingRef.current, {
+      //     translateY: 0,
+      //     autoAlpha: 1, // opacity: 1 + visibility: visible
+      //   });
 
-        tl.to(loadingRef.current, {
-          translateY: -20,
-          autoAlpha: 0,
-          duration: 0.2,
-        });
+      //   tl.to(loadingRef.current, {
+      //     translateY: -20,
+      //     autoAlpha: 0,
+      //     duration: 0.2,
+      //   });
 
-        tl.to(contentRef.current, {
-          translateY: 0,
-          autoAlpha: 1,
-          duration: 0.2,
-        });
-      }
+      //   tl.to(contentRef.current, {
+      //     translateY: 0,
+      //     autoAlpha: 1,
+      //     duration: 0.2,
+      //   });
+      // }
 
       setLocalLoading(loading);
     }, [loading]);
@@ -287,10 +288,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg className="block svg-wired " ref={svgRef}></svg>
         </div>
-        <span ref={loadingRef} className={clsx("absolute z-20 invisible")}>
+        {/* <span ref={loadingRef} className={clsx("absolute z-20 ")}>
           <LoaderCircle className="animate-spin" />
-        </span>
-        <span ref={contentRef} className={clsx("relative z-20 invisible ")}>
+        </span> */}
+        <span ref={contentRef} className={clsx("relative z-20  ")}>
           {props.children}
         </span>
       </button>
