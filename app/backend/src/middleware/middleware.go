@@ -5,7 +5,7 @@ import (
 	"backend/src/lib/common"
 	jwtgenerator "backend/src/lib/jwt-generator"
 	"context"
-	"fmt"
+
 	"log"
 	"net/http"
 	"strings"
@@ -18,12 +18,6 @@ func CORS(next http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		// Handle preflight request
-		// if r.Method == "OPTIONS" {
-		// 	w.WriteHeader(http.StatusOK)
-		// 	return
-		// }
 		next(w, r)
 	}
 }

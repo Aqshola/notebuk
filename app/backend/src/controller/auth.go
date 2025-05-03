@@ -92,8 +92,7 @@ type (
 	}
 
 	ResponseValidateData struct {
-		AccessToken  string `json:"accessToken"`
-		RefreshToken string `json:"refreshToken"`
+		Message string `json:"message"`
 	}
 )
 
@@ -172,10 +171,13 @@ func (inj *AppInjection) Validate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseData := ResponseValidateData{
-		AccessToken:  userToken.AccessToken,
-		RefreshToken: userToken.RefreshToken,
+		Message: "Success Login",
 	}
 
+	accessTokenCookie := http.Cookie{Name: "accessToken", Value: userToken.AccessToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
+	refreshTokenCookie := http.Cookie{Name: "refreshToken", Value: userToken.RefreshToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
+	http.SetCookie(w, &accessTokenCookie)
+	http.SetCookie(w, &refreshTokenCookie)
 	common.SendJSONResponse(w, http.StatusOK, constants.NO_ERROR, responseData, constants.RESPONSE_AUTH_VALIDATE_SUCCESS)
 }
 
@@ -303,8 +305,7 @@ func (inj *AppInjection) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseData := ResponseValidateData{
-		AccessToken:  userToken.AccessToken,
-		RefreshToken: userToken.RefreshToken,
+		Message: "Success Login",
 	}
 
 	common.SendJSONResponse(w, http.StatusOK, constants.NO_ERROR, responseData, constants.RESPONSE_AUTH_VALIDATE_SUCCESS)
