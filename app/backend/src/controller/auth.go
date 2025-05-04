@@ -152,14 +152,12 @@ func (inj *AppInjection) Validate(w http.ResponseWriter, r *http.Request) {
 	//STORE DATA
 	accessTokenData, err := accessTokenRepository.InsertUserAccessToken(userData.Id, userToken.AccessToken, userToken.ExpiredAccessToken)
 	if err != nil {
-		fmt.Println(err)
 		common.SendJSONResponse(w, http.StatusBadRequest, constants.ERROR_DATABASE_CALL_INSERT, nil, constants.RESPONSE_THIRD_PARTY_JWT_GENERATE_TOKEN_ERROR)
 		return
 	}
 
 	_, err = refreshTokenRepository.InsertUserRefreshToken(userData.Id, userToken.RefreshToken, userToken.ExpiredRefreshToken, accessTokenData.Id)
 	if err != nil {
-		fmt.Println(err)
 		common.SendJSONResponse(w, http.StatusBadRequest, constants.ERROR_DATABASE_CALL_INSERT, nil, constants.RESPONSE_THIRD_PARTY_JWT_GENERATE_TOKEN_ERROR)
 		return
 	}
@@ -174,10 +172,7 @@ func (inj *AppInjection) Validate(w http.ResponseWriter, r *http.Request) {
 		Message: "Success Login",
 	}
 
-	accessTokenCookie := http.Cookie{Name: "accessToken", Value: userToken.AccessToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
-	refreshTokenCookie := http.Cookie{Name: "refreshToken", Value: userToken.RefreshToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
-	http.SetCookie(w, &accessTokenCookie)
-	http.SetCookie(w, &refreshTokenCookie)
+	common.SetAuthCookie(w, userToken.AccessToken, userToken.RefreshToken)
 	common.SendJSONResponse(w, http.StatusOK, constants.NO_ERROR, responseData, constants.RESPONSE_AUTH_VALIDATE_SUCCESS)
 }
 

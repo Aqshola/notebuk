@@ -122,3 +122,10 @@ func GenerateUserToken(userId int) (*GenerateUserTokenValue, error) {
 	return userToken, nil
 
 }
+
+func SetAuthCookie(w http.ResponseWriter, accessToken string, refreshToken string) {
+	accessTokenCookie := http.Cookie{Name: "accessToken", Value: accessToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
+	refreshTokenCookie := http.Cookie{Name: "refreshToken", Value: refreshToken, HttpOnly: true, SameSite: http.SameSiteNoneMode, Secure: true}
+	http.SetCookie(w, &accessTokenCookie)
+	http.SetCookie(w, &refreshTokenCookie)
+}
