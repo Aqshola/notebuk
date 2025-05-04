@@ -1,7 +1,7 @@
 CREATE TABLE auth.users (
 	id serial4 NOT NULL,
 	email varchar NOT NULL,
-	"name" varchar NULL,
+	name varchar NULL,
 	"password" varchar NULL,
 	created_at timestamptz NULL,
 	created_by varchar NULL,
