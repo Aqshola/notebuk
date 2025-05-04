@@ -89,7 +89,7 @@ const Box = React.forwardRef<HTMLDivElement, MediumDrawerProps>(
         <div className="absolute top-0 h-0 left-0 right-0 z-0">
           <svg className="block svg-wired" ref={svgRef}></svg>
         </div>
-        <div className="relative z-30">{props.children}</div>
+        <div className="relative ">{props.children}</div>
       </div>
     );
   }

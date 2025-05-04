@@ -1,5 +1,6 @@
 import Box from "@/components/atomic/Box";
 import Button from "@/components/atomic/Button";
+import { useModalDialog } from "@/components/atomic/Dialog";
 import PersonCheckPhone from "@/components/custom/PersonCheckPhone";
 import { handleInputOnlyNumber } from "@/libs/common";
 import { ParamPostVerifyCode, postVerifyCode } from "@/services/auth/auth";
@@ -7,15 +8,36 @@ import useGlobalStore from "@/stores/global";
 import { useMutation } from "@tanstack/react-query";
 import React, { useRef } from "react";
 import { Helmet } from "react-helmet";
+import { useNavigate } from "react-router-dom";
 
 export default function VerifyOTP() {
-  const listOTPBox = useRef<Array<HTMLInputElement>>([]);
-  const globalState=useGlobalStore(state=>state)
-
   const TOTAL_BOX_OTP = 6;
 
+  const navigate=useNavigate()
+  const globalState=useGlobalStore(state=>state)
+  const listOTPBox = useRef<Array<HTMLInputElement>>([]);
+
+  const {ModalDialog:DialogStatus, showDialog:showDialogStatus}=useModalDialog()
+
   const mutationVerifyCode=useMutation({
-      mutationFn:(param:ParamPostVerifyCode)=>postVerifyCode(param)
+      mutationFn:(param:ParamPostVerifyCode)=>postVerifyCode(param),
+      onSuccess :async()=>{
+        const confirm=await showDialogStatus({
+          title:"Verifikasi OTP",
+          message:"Verifikasi OTP Berhasil",
+        })
+
+        if(confirm){
+          navigate("/note")
+        }
+      },
+      onError:async()=>{
+        await showDialogStatus({
+          title:"Gagal Verifikasi OTP",
+          message:"OTP Yang dimasukan salah"
+        })
+      }
+
   })
 
   function handleOnPaste(e: React.ClipboardEvent<HTMLInputElement>) {
@@ -93,6 +115,8 @@ export default function VerifyOTP() {
         </Button>
         </form>
       </div>
+
+      <DialogStatus/>
     </div>
   );
 }
