@@ -10,7 +10,6 @@ import {
 } from "@/libs/wired";
 import COLOR_THEME from "@/constants/color";
 import clsx from "clsx";
-import gsap from "gsap";
 import { LoaderCircle } from "lucide-react";
 
 const buttonVariants = cva(
@@ -280,7 +279,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           styleMode == "sketch" &&
             variant &&
             BUTTON_SKETCH_DROP_SHADOW[variant],
-          "focus:outline-none focus:ring-0 outline-none",
+          "!outline-none",
           "transition-all hover:-translate-y-1.5  active:scale-95 active:translate-y-0 filter  focus:-translate-y-1.5"
         )}
         {...props}
@@ -288,10 +287,25 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <div className="absolute top-0 h-0 left-0 right-0 cursor-none z-0">
           <svg className="block svg-wired " ref={svgRef}></svg>
         </div>
-        {/* <span ref={loadingRef} className={clsx("absolute z-20 ")}>
+
+        <span
+          ref={loadingRef}
+          className={clsx(
+            "absolute z-20 duration-500",
+            !loading && "scale-0 opacity-100",
+            loading && "delay-300"
+          )}
+        >
           <LoaderCircle className="animate-spin" />
-        </span> */}
-        <span ref={contentRef} className={clsx("relative z-20  ")}>
+        </span>
+
+        <span
+          ref={contentRef}
+          className={clsx(
+            "relative z-20  transition-all duration-500 ",
+            localLoading && "opacity-0 scale-0"
+          )}
+        >
           {props.children}
         </span>
       </button>

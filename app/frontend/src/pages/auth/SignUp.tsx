@@ -14,10 +14,12 @@ import { postSignUp, ParamPostSignUp } from "@/services/auth/auth";
 import FormField from "@/components/atomic/FormField";
 import { useModalDialog } from "@/components/atomic/Dialog";
 import useGlobalStore from "@/stores/global";
+import { SplitText } from "gsap/SplitText";
 
 export default function SignUp() {
-  const WORD_LOGIN = "Let's join us!";
+  gsap.registerPlugin(SplitText);
 
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const inputRef = useRef<HTMLDivElement[]>([]);
@@ -70,13 +72,29 @@ export default function SignUp() {
     const tl = gsap.timeline({
       delay: 0.5,
     });
-    letterRefs.current.forEach((el) => {
-      tl.to(el, {
-        duration: 0.1,
-        visibility: "visible",
-        ease: "sine",
-      });
-    });
+
+    let split = SplitText.create(titleRef.current, { type: "chars", });
+    tl.fromTo(
+      split.chars,
+      {
+        y: 50,
+        autoAlpha: 0, // from: below and hidden
+      },
+      {
+        duration: 1,
+        y: 0,
+        autoAlpha: 1, // to: at normal position and visible
+        stagger: 0.05,
+        ease: "bounce",
+      }
+    );
+    // letterRefs.current.forEach((el) => {
+    //   tl.to(el, {
+    //     duration: 0.1,
+    //     visibility: "visible",
+    //     ease: "sine",
+    //   });
+    // });
 
     brandRef.current.forEach((el, i) => {
       if (el) {
@@ -113,17 +131,10 @@ export default function SignUp() {
     <div className="max-w-screen-2xl h-screen mx-auto">
       <LandingNav />
       <div className="mt-5 flex flex-col items-center max-w-lg mx-auto ">
-        <h1>
-          {WORD_LOGIN.split("").map((el, index) => (
-            <span
-              key={index}
-              ref={(el) => (letterRefs.current[index] = el)}
-              className="text-3xl text-primary-purple font-comic-neue font-semibold invisible"
-            >
-              {el}
-            </span>
-          ))}
-        </h1>
+        <h1
+          ref={titleRef}
+          className="text-3xl text-primary-purple font-comic-neue font-semibold"
+        >  Let's join us!</h1>
 
         <div className="flex flex-col   gap-y-2">
           <PersonMovingEye />

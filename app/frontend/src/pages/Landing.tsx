@@ -5,7 +5,8 @@ import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import LandingNav from "@/components/compound/LandingNav";
 import gsap from "gsap";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { skipFocus } from "@/libs/common";
 
 export default function Landing() {
   //REF ANIMATE
@@ -15,6 +16,7 @@ export default function Landing() {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
   const buttonBoxRef = useRef<HTMLDivElement>(null);
+  const [dumLoading, setDumLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (
@@ -283,34 +285,41 @@ export default function Landing() {
               className="flex justify-center gap-3 md:gap-x-9 items-center"
               ref={buttonBoxRef}
             >
-              <Link to={"/sign-up"}>
-                <Button variant={"third"} styleMode="sketch" size={"lg"}>
+              <Link
+                to={"/sign-up"}
+                className="!outline-none"
+                onFocus={(e) => {
+                  skipFocus(e, "button");
+                }}
+              >
+                <Button
+                  variant={"third"}
+                  styleMode="sketch"
+                  size={"lg"}
+                  loading={dumLoading}
+                >
                   Join
                 </Button>
               </Link>
               <span className="font-comic-neue">Or</span>
-              <Link to={"/note"}>
+
+              <Link
+                to={"/note"}
+                onFocus={(e) => {
+                  skipFocus(e, "button");
+                }}
+              >
                 <Button
                   variant={"outline-black"}
                   styleMode="sketch"
                   size={"lg"}
+                  onClick={() => setDumLoading(!dumLoading)}
                 >
                   Write
                 </Button>
               </Link>
             </div>
           </div>
-          {/* <div className="flex-1  mx-auto w-full md:w-fit mb-auto pt-20 px-3">
-            <Box elevation={4} className=" w-full md:w-[500px] h-full">
-              <div className="p-4">
-                <h5 className="text-primary-purple font-comic-neue font font-semibold">
-                  What should i do ?
-                </h5>
-                <ReactSVG src="assets/images/scratch.svg" className="w-full" />
-                <ReactSVG src="assets/images/scratch.svg" className="w-full" />
-              </div>
-            </Box>
-          </div> */}
         </main>
       </div>
     </>
