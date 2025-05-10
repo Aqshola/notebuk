@@ -87,74 +87,71 @@ export default function VerifyOTP() {
   }, [combinedOtp]);
 
   return (
-    <div className="max-w-screen-xl mx-auto h-screen">
-      <Helmet>
-        <title>OTP</title>
-      </Helmet>
+    <>
+      <div className="max-w-screen-xl mx-auto h-screen">
+        <Helmet>
+          <title>OTP</title>
+        </Helmet>
 
-      <div className="text-center mt-24">
-        <h1 className="text-3xl font-bold font-comic-neue">Verify OTP</h1>
-        <div className="w-72 mx-auto mt-5">
-          <PersonCheckPhone happy={isEnoughOTP} />
-        </div>
-        <form onSubmit={handleSubmit}>
-          <div className="mt-6 grid grid-cols-6 gap-2 md:gap-11 px-5">
-            {Array.from({ length: TOTAL_BOX_OTP }).map((_, idx) => (
-              <div className="col-span-1" key={"VERIFBOX" + idx}>
-                <Input
-                  className="w-full h-full text-center  min-h-28 bg-transparent  text-3xl font-caveat"
-                  ref={(el) => {
-                    if (!el) return;
-                    listOTPBox.current[idx] = el;
-                  }}
-                  type="text"
-                  maxLength={1}
-                  onChange={(e) => handleChange(idx, e.target.value)}
-                  onInput={(e) => {
-                    handleInputOnlyNumber(e);
-                    const input = e.target as HTMLInputElement;
-                    const lengthCharFill = input.value.length == 1;
-                    const underTotal = idx < TOTAL_BOX_OTP - 1;
-
-                    if (lengthCharFill && underTotal) {
-                      listOTPBox.current[idx + 1].focus();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    const input = e.target as HTMLInputElement;
-                    const isDeleting =
-                      e.key === "Backspace" || e.key === "Delete";
-                    const isEmpty = input.value === "";
-
-                    const hasBefore = idx > 0;
-
-                    if (isDeleting && isEmpty && hasBefore) {
-                      e.preventDefault(); // prevent browser from default behavior
-                      listOTPBox.current[idx - 1]?.focus();
-                    }
-                  }}
-                  onPaste={handleOnPaste}
-                />
-                {/* <Box>
-                  <input
-                    
-                  />
-                </Box> */}
-              </div>
-            ))}
+        <div className="text-center mt-24">
+          <h1 className="text-3xl font-bold font-comic-neue">Verify OTP</h1>
+          <div className="w-72 mx-auto mt-5">
+            <PersonCheckPhone happy={isEnoughOTP} />
           </div>
-          <Button
-            styleMode="sketch"
-            variant={"default"}
-            className="mt-5"
-            type="submit"
-          >
-            Submit
-          </Button>
-        </form>
-      </div>
+          <form onSubmit={handleSubmit}>
+            <div className="mt-6 grid grid-cols-6 gap-2 md:gap-11 px-5">
+              {Array.from({ length: TOTAL_BOX_OTP }).map((_, idx) => (
+                <div className="col-span-1" key={"VERIFBOX" + idx}>
+                  <Input
+                    className=" text-center  min-h-28 bg-transparent  text-3xl font-caveat"
+                    ref={(el) => {
+                      if (!el) return;
+                      listOTPBox.current[idx] = el;
+                    }}
+                    type="text"
+                    maxLength={1}
+                    onChange={(e) => handleChange(idx, e.target.value)}
+                    onInput={(e) => {
+                      handleInputOnlyNumber(e);
+                      const input = e.target as HTMLInputElement;
+                      const lengthCharFill = input.value.length == 1;
+                      const underTotal = idx < TOTAL_BOX_OTP - 1;
 
+                      if (lengthCharFill && underTotal) {
+                        listOTPBox.current[idx + 1].focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      const input = e.target as HTMLInputElement;
+                      const isDeleting =
+                        e.key === "Backspace" || e.key === "Delete";
+                      const isEmpty = input.value === "";
+
+                      const hasBefore = idx > 0;
+
+                      if (isDeleting && isEmpty && hasBefore) {
+                        e.preventDefault(); // prevent browser from default behavior
+                        listOTPBox.current[idx - 1]?.focus();
+                      }
+                    }}
+                    onPaste={handleOnPaste}
+                  />
+             
+                </div>
+              ))}
+            </div>
+            <Button
+              styleMode="sketch"
+              variant={"default"}
+              className="mt-5"
+              type="submit"
+            >
+              Submit
+            </Button>
+          </form>
+        </div>
+      </div>
       <DialogStatus />
-    </div>
+    </>
   );
 }

@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 import "@/styles/custom-wired.css";
 import {
   generateSVGElevationSquare,
-  line,
   rectangle,
   SEED,
 } from "@/libs/wired";

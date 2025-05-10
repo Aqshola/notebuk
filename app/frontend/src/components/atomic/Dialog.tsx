@@ -60,7 +60,7 @@ export function useModalDialog() {
     >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96 font-comic-neue shadow-lg">
+        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96 font-comic-neue shadow-lg z-[99]">
           <Dialog.Title className="text-xl font-bold text-center mb-2">
             {popupContent.title}
           </Dialog.Title>
