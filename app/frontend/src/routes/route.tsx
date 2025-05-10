@@ -4,6 +4,7 @@ import NotFound from "../pages/error/404";
 import SignUp from "../pages/auth/SignUp";
 import TransitionComponent from "../components/custom/Transition";
 import VerifyOTP from "@/pages/auth/VerifyOTP";
+import General from "@/pages/note/General";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,15 @@ const router = createBrowserRouter([
     element: (
       <TransitionComponent>
         <VerifyOTP />
+      </TransitionComponent>
+    ),
+  },
+
+  {
+    path: "/note",
+    element: (
+      <TransitionComponent>
+        <General />
       </TransitionComponent>
     ),
   },

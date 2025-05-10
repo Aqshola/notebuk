@@ -88,14 +88,7 @@ export default function SignUp() {
         ease: "bounce",
       }
     );
-    // letterRefs.current.forEach((el) => {
-    //   tl.to(el, {
-    //     duration: 0.1,
-    //     visibility: "visible",
-    //     ease: "sine",
-    //   });
-    // });
-
+  
     brandRef.current.forEach((el, i) => {
       if (el) {
         tl.fromTo(
